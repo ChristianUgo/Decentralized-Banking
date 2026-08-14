@@ -1,0 +1,7 @@
+* text=auto eol=lf
+*.sol text diff=solidity
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+

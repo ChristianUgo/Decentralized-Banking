@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Build output and test artifacts
+.next/
+artifacts/
+cache/
+coverage/
+dist/
+out/
+
+# Environment and local secrets
+.env
+.env.*
+!.env.example
+frontend/.env.local
+
+# Logs and local tooling
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Hardhat local state
+ignition/deployments/chain-31337/
+

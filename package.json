@@ -1,0 +1,27 @@
+{
+  "name": "decentralized-banking",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.19.0",
+  "workspaces": [
+    "frontend"
+  ],
+  "engines": {
+    "node": ">=24.0.0",
+    "pnpm": ">=11.19.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter frontend dev",
+    "build": "pnpm --filter frontend build",
+    "lint": "pnpm --filter frontend lint",
+    "test": "pnpm test:contracts && pnpm --filter frontend test",
+    "test:contracts": "hardhat test",
+    "compile": "hardhat compile",
+    "check": "pnpm lint && pnpm test && pnpm build && pnpm compile"
+  },
+  "devDependencies": {
+    "hardhat": "3.13.0"
+  }
+}
+

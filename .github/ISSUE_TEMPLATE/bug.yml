@@ -1,0 +1,32 @@
+name: Bug report
+description: Report a reproducible defect that does not expose a private vulnerability
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: Do not report fund-loss or security vulnerabilities publicly. Follow SECURITY.md instead.
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Observed behavior
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+    validations:
+      required: true
+  - type: input
+    id: commit
+    attributes:
+      label: Commit or release
+

@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink-950: #07111f;
+  --color-ink-900: #0b1728;
+  --color-ink-800: #12233a;
+  --color-ink-700: #1d3552;
+  --color-mist-50: #f7fafc;
+  --color-mist-100: #eef4f8;
+  --color-mist-200: #d8e4ec;
+  --color-mist-300: #b7cad7;
+  --color-electric-300: #71e5ff;
+  --color-electric-400: #2dd4f7;
+  --color-electric-500: #08a9d2;
+  --color-signal-green: #4ade80;
+  --color-signal-amber: #fbbf24;
+  --color-signal-red: #fb7185;
+  --font-sans: "Inter", "Aptos", "Segoe UI", sans-serif;
+  --font-mono: "SFMono-Regular", "Cascadia Code", "Roboto Mono", monospace;
+  --shadow-panel: 0 24px 80px rgb(0 0 0 / 0.28);
+}
+
+:root {
+  color-scheme: dark;
+  background: #07111f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  background:
+    radial-gradient(circle at 14% 0%, rgb(8 169 210 / 0.18), transparent 30rem),
+    radial-gradient(circle at 92% 16%, rgb(45 212 247 / 0.09), transparent 26rem),
+    #07111f;
+  color: #eef4f8;
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: rgb(45 212 247 / 0.28);
+  color: #ffffff;
+}
+
+:focus-visible {
+  outline: 2px solid #71e5ff;
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
