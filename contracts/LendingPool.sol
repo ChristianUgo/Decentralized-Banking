@@ -24,6 +24,7 @@ contract LendingPool is ILendingPool, ReentrancyGuard {
     IStablecoin public immutable stablecoin;
     IPriceOracle public immutable priceOracle;
     IInterestEngine public immutable interestEngine;
+    uint8 private immutable oracleDecimals;
 
     mapping(address user => Account account) private accounts;
     uint256 public totalBorrowed;
@@ -35,6 +36,7 @@ contract LendingPool is ILendingPool, ReentrancyGuard {
     error InvalidAddress();
     error InvalidModule(address module);
     error InvalidOracleDecimals(uint8 decimals);
+    error InvalidOraclePrice();
     error NoDebt();
     error NothingToLiquidate();
     error UnsafeWithdrawal(uint256 resultingDebt, uint256 maximumDebt);
@@ -56,8 +58,11 @@ contract LendingPool is ILendingPool, ReentrancyGuard {
         priceOracle = IPriceOracle(priceOracle_);
         interestEngine = IInterestEngine(interestEngine_);
 
-        uint8 oracleDecimals = IPriceOracle(priceOracle_).getDecimals();
-        if (oracleDecimals > 18) revert InvalidOracleDecimals(oracleDecimals);
+        uint8 oracleDecimals_ = IPriceOracle(priceOracle_).getDecimals();
+        if (oracleDecimals_ > 18) {
+            revert InvalidOracleDecimals(oracleDecimals_);
+        }
+        oracleDecimals = oracleDecimals_;
     }
 
     function deposit() external payable override nonReentrant {
@@ -145,32 +150,27 @@ contract LendingPool is ILendingPool, ReentrancyGuard {
         uint256 debt = account.borrowedAmount;
         if (debt == 0) revert NoDebt();
 
-        uint256 healthFactor = _healthFactor(
+        uint256 normalizedPrice = _normalizedPrice();
+        uint256 healthFactor = _healthFactorAtPrice(
             account.collateralAmount,
-            account.borrowedAmount
+            account.borrowedAmount,
+            normalizedPrice
         );
         if (healthFactor >= MINIMUM_HEALTH_FACTOR) {
             revert HealthyPosition(healthFactor);
         }
 
-        uint256 debtToRepay = _maxLiquidatableDebt(
+        uint256 debtToRepay = _maxLiquidatableDebtAtPrice(
             account.collateralAmount,
-            debt
+            debt,
+            normalizedPrice
         );
         if (debtToRepay == 0) revert NothingToLiquidate();
 
-        uint256 baseCollateral = _usdToEth(
+        uint256 collateralToSeize = _liquidationCollateral(
             debtToRepay,
-            Math.Rounding.Ceil
-        );
-        uint256 bonusCollateral = Math.mulDiv(
-            baseCollateral,
-            LIQUIDATION_BONUS,
-            WAD
-        );
-        uint256 collateralToSeize = Math.min(
-            baseCollateral + bonusCollateral,
-            account.collateralAmount
+            account.collateralAmount,
+            normalizedPrice
         );
 
         account.borrowedAmount = debt - debtToRepay;
@@ -299,8 +299,21 @@ contract LendingPool is ILendingPool, ReentrancyGuard {
     ) private view returns (uint256) {
         if (debt == 0) return type(uint256).max;
         return
+            _healthFactorAtPrice(
+                collateralAmount,
+                debt,
+                _normalizedPrice()
+            );
+    }
+
+    function _healthFactorAtPrice(
+        uint256 collateralAmount,
+        uint256 debt,
+        uint256 normalizedPrice
+    ) private pure returns (uint256) {
+        return
             Math.mulDiv(
-                _ethToUsd(collateralAmount),
+                _ethToUsdAtPrice(collateralAmount, normalizedPrice),
                 LIQUIDATION_THRESHOLD,
                 debt
             );
@@ -309,15 +322,36 @@ contract LendingPool is ILendingPool, ReentrancyGuard {
     function _maximumDebt(
         uint256 collateralAmount
     ) private view returns (uint256) {
-        return Math.mulDiv(_ethToUsd(collateralAmount), WAD, COLLATERAL_RATIO);
+        return
+            Math.mulDiv(
+                _ethToUsdAtPrice(collateralAmount, _normalizedPrice()),
+                WAD,
+                COLLATERAL_RATIO
+            );
     }
 
     function _maxLiquidatableDebt(
         uint256 collateralAmount,
         uint256 debt
     ) private view returns (uint256) {
+        return
+            _maxLiquidatableDebtAtPrice(
+                collateralAmount,
+                debt,
+                _normalizedPrice()
+            );
+    }
+
+    function _maxLiquidatableDebtAtPrice(
+        uint256 collateralAmount,
+        uint256 debt,
+        uint256 normalizedPrice
+    ) private pure returns (uint256) {
         uint256 closeLimitedDebt = Math.mulDiv(debt, CLOSE_FACTOR, WAD);
-        uint256 collateralValue = _ethToUsd(collateralAmount);
+        uint256 collateralValue = _ethToUsdAtPrice(
+            collateralAmount,
+            normalizedPrice
+        );
         uint256 collateralLimitedDebt = Math.mulDiv(
             collateralValue,
             WAD,
@@ -327,20 +361,46 @@ contract LendingPool is ILendingPool, ReentrancyGuard {
     }
 
     function _ethToUsd(uint256 ethAmount) private view returns (uint256) {
-        uint256 price = priceOracle.getEthUsdPrice();
-        uint8 decimals = priceOracle.getDecimals();
-        uint256 valueAtOracleDecimals = Math.mulDiv(ethAmount, price, WAD);
-        return valueAtOracleDecimals * (10 ** (18 - decimals));
+        return _ethToUsdAtPrice(ethAmount, _normalizedPrice());
     }
 
-    function _usdToEth(
-        uint256 usdAmount,
-        Math.Rounding rounding
-    ) private view returns (uint256) {
+    function _ethToUsdAtPrice(
+        uint256 ethAmount,
+        uint256 normalizedPrice
+    ) private pure returns (uint256) {
+        return Math.mulDiv(ethAmount, normalizedPrice, WAD);
+    }
+
+    function _normalizedPrice() private view returns (uint256) {
         uint256 price = priceOracle.getEthUsdPrice();
-        uint8 decimals = priceOracle.getDecimals();
-        uint256 normalizedPrice = price * (10 ** (18 - decimals));
+        if (price == 0) revert InvalidOraclePrice();
+        return price * (10 ** (18 - oracleDecimals));
+    }
+
+    function _usdToEthAtPrice(
+        uint256 usdAmount,
+        uint256 normalizedPrice,
+        Math.Rounding rounding
+    ) private pure returns (uint256) {
         return Math.mulDiv(usdAmount, WAD, normalizedPrice, rounding);
+    }
+
+    function _liquidationCollateral(
+        uint256 debtToRepay,
+        uint256 availableCollateral,
+        uint256 normalizedPrice
+    ) private pure returns (uint256) {
+        uint256 baseCollateral = _usdToEthAtPrice(
+            debtToRepay,
+            normalizedPrice,
+            Math.Rounding.Ceil
+        );
+        uint256 bonusCollateral = Math.mulDiv(
+            baseCollateral,
+            LIQUIDATION_BONUS,
+            WAD
+        );
+        return Math.min(baseCollateral + bonusCollateral, availableCollateral);
     }
 
     function _requireContract(address module) private view {

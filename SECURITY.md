@@ -2,9 +2,9 @@
 
 ## Project status
 
-This project is under active development. Stage 2 contracts are intended only for local development. They have not been audited and are not approved for testnet, mainnet or real-value use.
+This project is under active development. Stage 3 contracts are intended only for local development. They have not been audited and are not approved for testnet, mainnet or real-value use.
 
-## Stage 2 trust assumptions
+## Protocol trust assumptions and Stage 3 controls
 
 - The owner of the local `PriceOracle` is fully trusted and can change every position's borrowing power and liquidation status.
 - The oracle freshness window is 24 hours in the local deployment; consuming stale prices reverts.
@@ -12,7 +12,13 @@ This project is under active development. Stage 2 contracts are intended only fo
 - The LendingPool may burn DBUSD directly from a repayer or liquidator without ERC-20 allowance, matching the source application's transaction flow.
 - Interest accrues lazily on account actions. Stored aggregate debt can lag unmaterialized interest for inactive accounts.
 - A 100% close factor preserves the source's one-click liquidation behavior and increases execution and slippage exposure versus partial liquidation.
-- Native ETH transfers use checks-effects-interactions plus reentrancy guards. Stage 3 still needs malicious-recipient and stateful invariant coverage.
+- Native ETH transfers use checks-effects-interactions plus reentrancy guards.
+- Stage 3 tests rejected ETH recipients and active reentrancy attempts, including full accounting rollback.
+- Seeded property tests reconcile collateral, debt, DBUSD supply and health across two-account action sequences.
+- Solhint is a zero-warning local gate; Slither findings of medium severity or higher fail CI.
+- Gas regression ceilings are executable and every optimization requires recorded before/after evidence.
+
+See the [Stage 3 threat model](docs/security/threat-model.md), [static-analysis policy](docs/security/static-analysis.md), and [gas baseline](docs/security/gas-baseline.md).
 
 ## Reporting a vulnerability
 

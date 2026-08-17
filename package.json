@@ -14,22 +14,30 @@
   "scripts": {
     "dev": "pnpm --filter frontend dev",
     "build": "pnpm --filter frontend build",
-    "lint": "pnpm --filter frontend lint",
+    "lint": "pnpm lint:contracts && pnpm lint:web",
+    "lint:contracts": "solhint --disc --max-warnings 0 contracts/**/*.sol",
+    "lint:web": "pnpm --filter frontend lint",
     "test": "pnpm test:contracts && pnpm --filter frontend test",
     "test:contracts": "hardhat test",
+    "test:invariants": "hardhat test test/interest-engine.fuzz.test.js test/protocol-invariants.test.js",
     "compile": "hardhat compile",
     "deploy:local": "hardhat run scripts/deploy.js",
     "export:artifacts": "node scripts/export-frontend-artifacts.js",
-    "check": "pnpm lint && pnpm test && pnpm build && pnpm compile"
+    "gas:report": "hardhat run scripts/report-gas.js",
+    "audit:dependencies": "pnpm audit --audit-level high",
+    "check": "pnpm lint && pnpm test && pnpm build && pnpm compile && pnpm gas:report && pnpm audit:dependencies"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-ethers": "4.0.15",
     "@nomicfoundation/hardhat-ethers-chai-matchers": "3.0.11",
     "@nomicfoundation/hardhat-mocha": "3.1.0",
+    "@nomicfoundation/hardhat-network-helpers": "3.0.11",
     "chai": "6.2.2",
     "ethers": "6.17.0",
+    "fast-check": "4.9.0",
     "hardhat": "3.13.0",
-    "mocha": "11.8.0"
+    "mocha": "11.8.0",
+    "solhint": "6.2.4"
   },
   "dependencies": {
     "@openzeppelin/contracts": "5.6.1"
