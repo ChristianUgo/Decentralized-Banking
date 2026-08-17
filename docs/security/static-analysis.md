@@ -20,6 +20,8 @@ The adversarial test receiver narrowly suppresses `no-complex-fallback` and `avo
 
 The `Slither static analysis` GitHub Actions job compiles the exact lockfile and runs the pinned Slither release. Findings of medium severity or above fail the job. Dependencies and purpose-built adversarial test contracts are excluded so the report focuses on protocol-owned production code.
 
+`LendingPool` uses five line-scoped `incorrect-equality` suppressions for reviewed zero-sentinel checks: a rounded zero liquidation quote, clearing the interest timestamp after full repayment, detecting an inactive accrual window, accepting zero rounded interest, and representing a debt-free account with maximal health. These comparisons do not use attacker-controlled balances as authorization conditions. The detector remains enabled everywhere else, and every future suppression requires a nearby protocol-specific justification.
+
 Slither is not available in the Windows development environment, so Solhint is the reproducible local static gate and Slither is the independent Linux CI gate. A green Slither run is required before Stage 3 may be merged.
 
 Static analysis does not establish safety or replace an independent audit.

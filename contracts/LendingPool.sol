@@ -165,6 +165,8 @@ contract LendingPool is ILendingPool, ReentrancyGuard {
             debt,
             normalizedPrice
         );
+        // A zero liquidation quote is an explicit rounding sentinel that fails closed.
+        // slither-disable-next-line incorrect-equality
         if (debtToRepay == 0) revert NothingToLiquidate();
 
         uint256 collateralToSeize = _liquidationCollateral(
@@ -175,6 +177,8 @@ contract LendingPool is ILendingPool, ReentrancyGuard {
 
         account.borrowedAmount = debt - debtToRepay;
         account.collateralAmount -= collateralToSeize;
+        // Fully repaid debt deliberately resets the accrual timestamp sentinel.
+        // slither-disable-next-line incorrect-equality
         account.lastInterestUpdate = account.borrowedAmount == 0
             ? 0
             : block.timestamp;
@@ -220,6 +224,8 @@ contract LendingPool is ILendingPool, ReentrancyGuard {
         address user
     ) public view override returns (uint256) {
         Account storage account = accounts[user];
+        // Zero values explicitly identify an account with no active accrual window.
+        // slither-disable-next-line incorrect-equality
         if (
             account.borrowedAmount == 0 ||
             account.lastInterestUpdate == 0 ||
@@ -286,6 +292,8 @@ contract LendingPool is ILendingPool, ReentrancyGuard {
 
         uint256 interest = previewInterest(user);
         account.lastInterestUpdate = block.timestamp;
+        // Integer rounding may intentionally produce no interest for a short interval.
+        // slither-disable-next-line incorrect-equality
         if (interest == 0) return;
 
         account.borrowedAmount += interest;
@@ -297,6 +305,8 @@ contract LendingPool is ILendingPool, ReentrancyGuard {
         uint256 collateralAmount,
         uint256 debt
     ) private view returns (uint256) {
+        // Zero debt is the explicit debt-free state and has maximal health.
+        // slither-disable-next-line incorrect-equality
         if (debt == 0) return type(uint256).max;
         return
             _healthFactorAtPrice(
