@@ -224,9 +224,9 @@ contract LendingPool is ILendingPool, ReentrancyGuard {
         address user
     ) public view override returns (uint256) {
         Account storage account = accounts[user];
-        // Zero values explicitly identify an account with no active accrual window.
-        // slither-disable-next-line incorrect-equality
         if (
+            // Zero values explicitly identify no active accrual window.
+            // slither-disable-next-line incorrect-equality
             account.borrowedAmount == 0 ||
             account.lastInterestUpdate == 0 ||
             block.timestamp == account.lastInterestUpdate
