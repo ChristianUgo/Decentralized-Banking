@@ -1,8 +1,8 @@
 import Link from "next/link";
 
 import { Container } from "@/components/Container";
-import { Metric } from "@/components/Metric";
 import { SectionHeading } from "@/components/SectionHeading";
+import { ProtocolPreview } from "@/components/home/ProtocolPreview";
 
 const flow = [
   ["01", "Deposit", "Lock ETH as transparent, self-custodied collateral."],
@@ -26,7 +26,7 @@ export default function HomePage() {
           <div>
             <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-electric-300/20 bg-electric-300/8 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-electric-300">
               <span className="h-1.5 w-1.5 rounded-full bg-electric-300 shadow-[0_0_16px_#71e5ff]" />
-              Protocol foundation · Stage 1
+              Wallet and contract reads · Stage 4
             </div>
             <h1 className="max-w-4xl text-balance text-5xl font-semibold leading-[0.98] tracking-[-0.055em] text-white sm:text-7xl lg:text-[5.35rem]">
               Banking logic,
@@ -54,35 +54,7 @@ export default function HomePage() {
 
           <div className="relative mx-auto w-full max-w-xl">
             <div className="absolute -inset-8 -z-10 rounded-full bg-electric-400/10 blur-3xl" />
-            <div className="overflow-hidden rounded-[2rem] border border-white/12 bg-ink-900/88 shadow-panel backdrop-blur-xl">
-              <div className="flex items-center justify-between border-b border-white/8 px-6 py-5">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-mist-300">Position engine</p>
-                  <p className="mt-1 text-sm text-mist-300">Wallet not connected</p>
-                </div>
-                <span className="rounded-full border border-signal-green/20 bg-signal-green/8 px-3 py-1 text-xs font-medium text-signal-green">
-                  Read-only
-                </span>
-              </div>
-              <div className="grid gap-px bg-white/8 sm:grid-cols-3">
-                <Metric label="Collateral" value="—" detail="ETH" />
-                <Metric label="Debt" value="—" detail="AUSD" />
-                <Metric label="Health" value="—" detail="Connect in Stage 4" />
-              </div>
-              <div className="p-6">
-                <div className="mb-3 flex justify-between text-xs font-medium text-mist-300">
-                  <span>Position risk</span>
-                  <span>Awaiting on-chain data</span>
-                </div>
-                <div className="h-2 overflow-hidden rounded-full bg-white/8">
-                  <div className="h-full w-1/3 rounded-full bg-gradient-to-r from-electric-500 to-electric-300 opacity-45" />
-                </div>
-                <p className="mt-5 rounded-2xl border border-white/8 bg-white/[0.035] p-4 text-sm leading-6 text-mist-300">
-                  Stage 1 establishes the visual and engineering foundation. Wallet
-                  reads and transaction controls are intentionally not simulated.
-                </p>
-              </div>
-            </div>
+            <ProtocolPreview />
           </div>
         </Container>
       </section>
@@ -130,4 +102,3 @@ export default function HomePage() {
     </main>
   );
 }
-
