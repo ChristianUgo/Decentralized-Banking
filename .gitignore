@@ -8,6 +8,9 @@ cache/
 coverage/
 dist/
 out/
+results.sarif
+slither.db.json
+slither.sarif
 
 # Environment and local secrets
 .env
@@ -26,4 +29,3 @@ Thumbs.db
 
 # Hardhat local state
 ignition/deployments/chain-31337/
-

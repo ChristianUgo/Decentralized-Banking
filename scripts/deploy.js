@@ -3,18 +3,10 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { network } from "hardhat";
 import { exportFrontendArtifacts } from "./export-frontend-artifacts.js";
-
-const INITIAL_ETH_USD_PRICE = 2_000n * 10n ** 8n;
-const MAX_ORACLE_STALENESS = 24n * 60n * 60n;
+import { deployProtocol } from "./lib/deploy-protocol.js";
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const repositoryRoot = path.resolve(scriptDirectory, "..");
-
-async function deployContract(ethers, name, constructorArguments = []) {
-  const contract = await ethers.deployContract(name, constructorArguments);
-  await contract.waitForDeployment();
-  return contract;
-}
 
 async function main() {
   const connection = await network.create();
@@ -26,28 +18,14 @@ async function main() {
   console.log(`Deploying Stage 2 protocol to ${networkName} (${chainId})`);
   console.log(`Deployer: ${deployerAddress}`);
 
-  const priceOracle = await deployContract(ethers, "PriceOracle", [
-    deployerAddress,
-    INITIAL_ETH_USD_PRICE,
-    MAX_ORACLE_STALENESS,
-  ]);
-  const interestEngine = await deployContract(ethers, "InterestEngine");
-  const collateralVault = await deployContract(ethers, "CollateralVault", [
-    deployerAddress,
-  ]);
-  const stablecoin = await deployContract(ethers, "Stablecoin", [
-    deployerAddress,
-  ]);
-  const lendingPool = await deployContract(ethers, "LendingPool", [
-    await collateralVault.getAddress(),
-    await stablecoin.getAddress(),
-    await priceOracle.getAddress(),
-    await interestEngine.getAddress(),
-  ]);
-
+  const {
+    collateralVault,
+    interestEngine,
+    lendingPool,
+    priceOracle,
+    stablecoin,
+  } = await deployProtocol(ethers);
   const lendingPoolAddress = await lendingPool.getAddress();
-  await (await collateralVault.setLendingPool(lendingPoolAddress)).wait();
-  await (await stablecoin.setLendingPool(lendingPoolAddress)).wait();
 
   const manifest = {
     chainId,

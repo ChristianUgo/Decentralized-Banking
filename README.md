@@ -11,8 +11,8 @@ The project is being implemented stage by stage from the approved implementation
 | Stage | Scope | Status |
 | --- | --- | --- |
 | 1 | Repository, Next.js/Tailwind foundation, design primitives, CI and contribution standards | Complete |
-| 2 | Solidity interfaces, protocol contracts, focused tests and local deployment | Ready for review |
-| 3 | Contract hardening, invariants, fuzzing and deployment workflow | Not started |
+| 2 | Solidity interfaces, protocol contracts, focused tests and local deployment | Complete (PR #6) |
+| 3 | Contract hardening, invariants, fuzzing, gas and static analysis | Ready for review |
 | 4 | Wallet connection and on-chain read layer | Not started |
 | 5 | Deposit, withdraw, borrow, repay and liquidation transactions | Not started |
 | 6 | Complete responsive UI/UX and accessibility | Not started |
@@ -31,6 +31,8 @@ The project is being implemented stage by stage from the approved implementation
 | Solidity baseline | 0.8.30 | Explicit compiler pin with checked arithmetic and optimizer support; revisited before protocol implementation |
 | Contract library | OpenZeppelin Contracts 5.6.1 | Audited ERC-20, ownership, reentrancy and arithmetic building blocks |
 | Unit testing | Mocha/Chai for contracts; Vitest for frontend | Focused JavaScript suites with behavior-specific files |
+| Property testing | fast-check 4.9.0 | Seeded interest fuzzing and randomized multi-account action sequences |
+| Solidity analysis | Solhint 6.2.4 locally; Slither 0.11.6 in CI | Fast zero-warning feedback plus deeper independent Linux analysis |
 | Package management | pnpm 11.19.0 workspace | Fast deterministic installs with one lockfile for protocol and frontend |
 | Automation | GitHub Actions | Reproducible lint, test, build and compile checks on pull requests |
 
@@ -81,11 +83,15 @@ Open `http://localhost:3000`.
 ### Useful commands
 
 ```bash
-pnpm lint             # Frontend lint rules
+pnpm lint             # Solidity and frontend lint rules
 pnpm test             # Contract and frontend tests
 pnpm build            # Production Next.js build
 pnpm compile          # Solidity compilation
 pnpm deploy:local     # Deploy and export local ABI/address fixtures
+pnpm test:invariants  # Seeded fuzz and multi-account invariant suites
+pnpm gas:report       # Gas baseline and regression ceilings
+pnpm lint:contracts   # Zero-warning Solidity static/lint gate
+pnpm audit:dependencies # High-severity dependency gate
 pnpm check            # Complete repository quality gate
 ```
 
@@ -100,6 +106,12 @@ The protocol is split into five narrow modules:
 - `LendingPool` coordinates deposit, withdrawal, borrowing, repayment, lazy interest accrual, health checks, and liquidation.
 
 The documented risk parameters are 150% collateralization, an 85% liquidation threshold, a 7% liquidation bonus, 100% close factor for source-compatible one-click liquidation, and 0.01 DBUSD minimum residual debt. See [the Stage 2 architecture decision](docs/adr/0003-protocol-architecture-and-risk-parameters.md) for assumptions and trade-offs.
+
+## Stage 3 hardening
+
+Stage 3 adds explicit liquidation and health boundaries, two-account randomized state transitions, fuzzed interest math, malicious ETH receiver coverage, ownership and module validation, dependency auditing, gas ceilings, Solhint, and a pinned Slither version in CI. The protocol now snapshots a normalized oracle price during liquidation and caches validated oracle decimals, reducing liquidation gas by 4.69% in the deterministic baseline.
+
+See the [threat model](docs/security/threat-model.md), [static-analysis policy](docs/security/static-analysis.md), and [gas baseline](docs/security/gas-baseline.md). These controls improve evidence; they do not make the protocol audited or production-safe.
 
 ## Product architecture
 
@@ -142,11 +154,11 @@ Gas work starts after correctness and security invariants are covered. Planned t
 - immutable addresses where deployment topology permits;
 - optimizer settings measured against realistic protocol tests.
 
-Every optimization must include a before/after gas report and must not weaken access control, oracle validation, arithmetic clarity or invariant coverage.
+Every optimization must include a before/after gas report and must not weaken access control, oracle validation, arithmetic clarity or invariant coverage. Stage 3 establishes executable review ceilings with `pnpm gas:report`.
 
 ## Security assumptions and limits
 
-- Stage 2 is local-development software and has not been audited or approved for testnet/mainnet use.
+- Stage 3 remains local-development software and has not been audited or approved for testnet/mainnet use.
 - Collateral and debt calculations use integer base units and OpenZeppelin `Math.mulDiv`, never floating-point arithmetic.
 - Oracle freshness, decimal scaling and manipulation resistance are protocol-critical.
 - Healthy positions must never be liquidatable; unsafe withdrawals and over-borrowing must revert.
