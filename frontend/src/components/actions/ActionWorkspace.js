@@ -48,9 +48,9 @@ function CurrentPosition({ data, position }) {
           ["Health factor", formatHealthFactor(position?.healthFactor)],
           ["Borrow APR", `${formatAmount((data?.protocol.borrowRate ?? 0n) * 100n, { maxFraction: 2 })}%`],
         ].map(([label, value]) => (
-          <div className="flex items-center justify-between gap-4" key={label}>
+          <div className="grid min-w-0 grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] items-center gap-4" key={label}>
             <dt className="text-mist-300">{label}</dt>
-            <dd className="font-semibold tabular-nums text-white">{value}</dd>
+            <dd className="break-words text-right font-semibold tabular-nums text-white">{value}</dd>
           </div>
         ))}
       </dl>
@@ -126,7 +126,7 @@ export function ActionWorkspace({ kind }) {
         {readError && <p className="rounded-2xl border border-signal-red/25 bg-signal-red/8 p-4 text-sm text-signal-red" role="alert">{readError}</p>}
         <section className="rounded-[2rem] border border-white/10 bg-ink-900/72 p-5 shadow-panel sm:p-8">
           {kind === "collateral" && (
-            <div className="mb-7 grid grid-cols-2 rounded-full border border-white/10 bg-ink-950/65 p-1" aria-label="Collateral action">
+            <div className="mb-7 grid grid-cols-2 rounded-full border border-white/10 bg-ink-950/65 p-1" aria-label="Collateral action" role="group">
               {["deposit", "withdraw"].map((option) => (
                 <button
                   aria-pressed={mode === option}
@@ -152,6 +152,7 @@ export function ActionWorkspace({ kind }) {
             value={value}
           />
           <button
+            aria-describedby={touched && validation.error ? `${action}-amount-field-error` : undefined}
             className="mt-6 min-h-13 w-full rounded-full bg-electric-300 px-6 text-sm font-semibold text-ink-950 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-45"
             disabled={locked || wallet.status !== "connected" || status === "loading"}
             onClick={() => void review()}
@@ -160,7 +161,7 @@ export function ActionWorkspace({ kind }) {
             {transaction.state.status === "preparing" ? "Running preflight…" : `Review ${action}`}
           </button>
           {ownsTransaction && transaction.state.status === "confirmed" && (
-            <div className="mt-5 rounded-2xl border border-signal-green/25 bg-signal-green/8 p-4 text-sm text-mist-100">
+            <div className="mt-5 rounded-2xl border border-signal-green/25 bg-signal-green/8 p-4 text-sm text-mist-100" role="status">
               Confirmed. <Link className="font-semibold text-signal-green underline" href="/dashboard">View the refreshed dashboard</Link>.
             </div>
           )}

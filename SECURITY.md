@@ -41,6 +41,15 @@ See [ADR 0005](docs/adr/0005-wallet-and-read-layer.md) for the detailed boundary
 
 See [ADR 0006](docs/adr/0006-transaction-lifecycle-and-preflight.md) for the shared write lifecycle.
 
+## Stage 6 interface assumptions
+
+- Responsive and accessibility behavior improves access to risk information but is not a protocol security boundary.
+- Transaction state, warnings, and position health use visible text and programmatic status in addition to color.
+- The interface targets WCAG 2.2 AA practices but has not received an independent accessibility audit or certification.
+- Contract checks remain authoritative if a browser, assistive technology, translation, or display setting presents stale or incomplete preview information.
+
+See [ADR 0007](docs/adr/0007-responsive-and-accessible-interface.md) and the [accessibility acceptance guide](docs/accessibility.md).
+
 ## Reporting a vulnerability
 
 Do not open a public issue for a suspected vulnerability involving loss of funds, authorization, oracle manipulation, reentrancy, arithmetic, liquidation or secret exposure. Contact the repository owner privately with:

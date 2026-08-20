@@ -7,17 +7,18 @@ export function ReviewPanel({ onEdit, onSubmit, state }) {
 
   return (
     <section className="rounded-[1.75rem] border border-electric-300/25 bg-electric-300/[0.055] p-5 sm:p-6">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-electric-300">Final review</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-electric-300">Wallet checkpoint</p>
+      <h2 className="mt-2 text-xl font-semibold text-white">Final transaction review</h2>
       <dl className="mt-5 space-y-3 text-sm">
         {state.summary?.rows?.map(([label, value]) => (
-          <div className="flex items-start justify-between gap-5" key={label}>
+          <div className="grid min-w-0 grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)] items-start gap-4" key={label}>
             <dt className="text-mist-300">{label}</dt>
-            <dd className="text-right font-semibold text-white">{value}</dd>
+            <dd className="break-words text-right font-semibold text-white">{value}</dd>
           </div>
         ))}
-        <div className="flex items-start justify-between gap-5 border-t border-white/9 pt-3">
+        <div className="grid min-w-0 grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)] items-start gap-4 border-t border-white/9 pt-3">
           <dt className="text-mist-300">Estimated network fee</dt>
-          <dd className="text-right font-semibold text-white">
+          <dd className="break-words text-right font-semibold text-white">
             {state.estimatedFee ? `${formatAmount(state.estimatedFee, { maxFraction: 6 })} ETH` : "Wallet estimate"}
           </dd>
         </div>

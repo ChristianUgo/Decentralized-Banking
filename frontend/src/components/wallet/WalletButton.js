@@ -54,15 +54,20 @@ export function WalletButton() {
         </p>
       </div>
       <button
-        aria-label={detail}
-        className="inline-flex min-h-10 items-center gap-2 rounded-full border border-electric-300/25 bg-electric-300/8 px-4 text-sm font-semibold text-electric-300 transition hover:border-electric-300/50 hover:bg-electric-300/14 disabled:cursor-not-allowed disabled:opacity-55"
+        aria-busy={busyStatus(status)}
+        aria-label={`${label}. ${detail}`}
+        className="inline-flex size-11 items-center justify-center gap-2 rounded-full border border-electric-300/25 bg-electric-300/8 px-3 text-sm font-semibold text-electric-300 transition hover:border-electric-300/50 hover:bg-electric-300/14 disabled:cursor-not-allowed disabled:opacity-55 min-[430px]:h-11 min-[430px]:w-auto min-[430px]:px-4"
         disabled={disabled}
         onClick={() => void action()}
+        title={detail}
         type="button"
       >
         <span className={`h-2 w-2 rounded-full ${dotClass}`} aria-hidden="true" />
-        <span>{label}</span>
+        <span className="hidden min-[430px]:inline">{label}</span>
       </button>
     </div>
   );
+}
+function busyStatus(status) {
+  return status === "checking" || status === "connecting" || status === "switching";
 }

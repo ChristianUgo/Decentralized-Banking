@@ -51,7 +51,13 @@ export function RiskPanel({ position }) {
       </div>
       <div className="mt-9 h-2 overflow-hidden rounded-full bg-white/8">
         <div
+          aria-label={`Position health: ${health.label}`}
+          aria-valuemax="100"
+          aria-valuemin="0"
+          aria-valuenow={health.progress}
+          aria-valuetext={`${formatHealthFactor(position.healthFactor)}, ${health.label}`}
           className={`h-full rounded-full transition-[width] duration-500 ${styles.bar}`}
+          role="meter"
           style={{ width: `${health.progress}%` }}
         />
       </div>
