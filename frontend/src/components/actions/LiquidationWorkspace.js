@@ -15,9 +15,9 @@ import { useWallet } from "@/providers/WalletProvider";
 
 function PositionRow({ label, value }) {
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-white/7 py-3 last:border-0">
+    <div className="grid min-w-0 grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] items-center gap-4 border-b border-white/7 py-3 last:border-0">
       <dt className="text-sm text-mist-300">{label}</dt>
-      <dd className="text-right text-sm font-semibold tabular-nums text-white">{value}</dd>
+      <dd className="break-words text-right text-sm font-semibold tabular-nums text-white">{value}</dd>
     </div>
   );
 }
@@ -143,7 +143,7 @@ export function LiquidationWorkspace() {
               )}
               {eligible && (
                 <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-2xl border border-white/9 bg-white/[0.035] p-4 text-sm leading-6 text-mist-200">
-                  <input className="mt-1 size-4 accent-electric-300" checked={acknowledged} disabled={busy} onChange={(event) => setAcknowledged(event.target.checked)} type="checkbox" />
+                  <input className="mt-0.5 size-5 shrink-0 accent-electric-300" checked={acknowledged} disabled={busy} onChange={(event) => setAcknowledged(event.target.checked)} type="checkbox" />
                   I understand that price, interest, gas, and the final collateral reward can change before confirmation.
                 </label>
               )}

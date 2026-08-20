@@ -27,15 +27,18 @@ export function TransactionStatus() {
 
   return (
     <aside
+      aria-atomic="true"
+      aria-labelledby="transaction-status-title"
       aria-live="polite"
       className="fixed inset-x-4 bottom-4 z-50 mx-auto max-w-md rounded-[1.75rem] border border-white/12 bg-ink-900/95 p-5 shadow-panel backdrop-blur-xl sm:left-auto sm:mx-0 sm:right-5"
+      role="status"
     >
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-electric-300">
             {ACTION_LABELS[state.action] || "Protocol transaction"}
           </p>
-          <h2 className="mt-2 text-lg font-semibold text-white">{title}</h2>
+          <h2 className="mt-2 text-lg font-semibold text-white" id="transaction-status-title">{title}</h2>
           <p className="mt-1 text-sm leading-6 text-mist-300">{description}</p>
         </div>
         {!isTransactionBusy(state.status) && (
@@ -57,7 +60,7 @@ export function TransactionStatus() {
       )}
       {state.hash && (
         <p className="mt-3 break-all font-mono text-xs text-mist-200">
-          {explorerHref ? <a className="underline" href={explorerHref} rel="noreferrer" target="_blank">View {shortenAddress(state.hash, 8)}</a> : state.hash}
+          {explorerHref ? <a className="underline decoration-electric-300/60 underline-offset-4 hover:text-white" href={explorerHref} rel="noreferrer" target="_blank">View transaction {shortenAddress(state.hash, 8)}<span className="sr-only"> (opens in a new tab)</span></a> : state.hash}
         </p>
       )}
       {state.error && <p className="mt-4 rounded-xl bg-signal-red/10 p-3 text-sm text-signal-red" role="alert">{state.error}</p>}

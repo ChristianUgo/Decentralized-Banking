@@ -10,3 +10,7 @@ export function findNavigationItem(pathname) {
   return primaryNavigation.find(({ href }) => href === pathname) ?? null;
 }
 
+export function isNavigationItemActive(pathname, href) {
+  if (!pathname || !href) return false;
+  return pathname === href || pathname.startsWith(`${href}/`);
+}

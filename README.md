@@ -2,7 +2,7 @@
 
 Aegis Bank is a non-custodial lending application where users will deposit ETH collateral, borrow a protocol-issued stablecoin, repay debt and interest, withdraw safe collateral, monitor position health, and liquidate eligible unhealthy positions for a bonus.
 
-The project is being implemented stage by stage from the approved implementation plan. Stages 1–4 established the frontend foundation, hardened local protocol, browser-wallet lifecycle, and on-chain read layer. Stage 5 adds guarded write journeys with preflight simulation, explicit signing and confirmation states, and post-confirmation refresh.
+The project is being implemented stage by stage from the approved implementation plan. Stages 1–5 established the frontend foundation, hardened local protocol, browser-wallet lifecycle, on-chain reads, and guarded write journeys. Stage 6 completes the responsive interaction system and accessibility pass without changing protocol behavior.
 
 > **Security status:** Local-development contracts only. The protocol is unaudited, uses an owner-updated test oracle, and must not be used with real funds.
 
@@ -14,8 +14,8 @@ The project is being implemented stage by stage from the approved implementation
 | 2 | Solidity interfaces, protocol contracts, focused tests and local deployment | Complete (PR #6) |
 | 3 | Contract hardening, invariants, fuzzing, gas and static analysis | Complete (PR #7) |
 | 4 | Wallet connection and on-chain read layer | Complete |
-| 5 | Deposit, withdraw, borrow, repay and liquidation transactions | Ready for review |
-| 6 | Complete responsive UI/UX and accessibility | Not started |
+| 5 | Deposit, withdraw, borrow, repay and liquidation transactions | Complete |
+| 6 | Complete responsive UI/UX and accessibility | Ready for review |
 | 7 | Integrated QA and testnet release | Not started |
 | 8 | GitHub release and production frontend deployment | Not started |
 | 9 | Interview guide based on the deployed release | Not started |
@@ -143,6 +143,12 @@ Stage 5 replaces every transaction placeholder with a complete local-chain journ
 Every write follows one state model: validate input, simulate the exact contract call, estimate gas, review, request the wallet signature, expose the submitted hash, wait for a successful receipt, then refresh affected reads. Account or network changes invalidate prepared transactions. DBUSD repayment and liquidation use the protocol's direct-burn authority and do not create a misleading allowance step.
 
 See [ADR 0006](docs/adr/0006-transaction-lifecycle-and-preflight.md) for the transaction boundary, preview assumptions, and confirmation model.
+
+## Stage 6 responsive and accessibility layer
+
+Stage 6 completes the custom responsive shell with active-route navigation, an accessible mobile menu, compact small-screen wallet controls, minimum touch targets, overflow-safe financial values, and an expanded release footer. Banking forms expose persistent instructions and errors, transaction progress uses live status semantics, health is represented as a named meter, and keyboard focus remains visible throughout every journey.
+
+The interface respects reduced-motion, increased-contrast, and forced-color preferences. It targets WCAG 2.2 AA practices but is not certified or independently audited. See [ADR 0007](docs/adr/0007-responsive-and-accessible-interface.md) and the [accessibility acceptance guide](docs/accessibility.md).
 
 ## Product architecture
 

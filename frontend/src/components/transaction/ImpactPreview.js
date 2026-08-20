@@ -15,7 +15,7 @@ export function ImpactPreview({ action, preview }) {
     <section className="rounded-[1.75rem] border border-white/9 bg-ink-900/55 p-5 sm:p-6">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-sm font-semibold text-white">Estimated position after confirmation</h2>
-        <span className="rounded-full bg-electric-300/10 px-3 py-1 text-xs font-semibold text-electric-300">Preview</span>
+        <span className="shrink-0 rounded-full bg-electric-300/10 px-3 py-1 text-xs font-semibold text-electric-300">Preview</span>
       </div>
       <div className="mt-5 grid gap-3 sm:grid-cols-3">
         <PreviewMetric

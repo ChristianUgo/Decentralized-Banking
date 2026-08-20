@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { findNavigationItem, primaryNavigation } from "./navigation";
+import { findNavigationItem, isNavigationItemActive, primaryNavigation } from "./navigation";
 
 describe("primary navigation", () => {
   it("preserves every source-project banking route", () => {
@@ -23,5 +23,11 @@ describe("primary navigation", () => {
   it("returns null for a route outside the banking navigation", () => {
     expect(findNavigationItem("/unknown")).toBeNull();
   });
-});
 
+  it("marks exact and nested banking routes active without matching similar paths", () => {
+    expect(isNavigationItemActive("/borrow", "/borrow")).toBe(true);
+    expect(isNavigationItemActive("/borrow/review", "/borrow")).toBe(true);
+    expect(isNavigationItemActive("/borrower", "/borrow")).toBe(false);
+    expect(isNavigationItemActive(null, "/borrow")).toBe(false);
+  });
+});

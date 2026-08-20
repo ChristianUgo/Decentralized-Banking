@@ -9,8 +9,7 @@ export function Logo() {
           <path d="m9 12 2 2 4-4" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.6" />
         </svg>
       </span>
-      <span className="text-sm font-semibold tracking-[0.08em] text-white">AEGIS BANK</span>
+      <span className="hidden text-sm font-semibold tracking-[0.08em] text-white min-[430px]:inline">AEGIS BANK</span>
     </Link>
   );
 }
-
