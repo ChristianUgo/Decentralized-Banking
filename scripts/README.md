@@ -1,4 +1,6 @@
-# Scripts
+# Protocol scripts
 
-Stage 2 and Stage 3 will add deterministic deployment and frontend-artifact export scripts here. Scripts must never embed private keys or silently overwrite an address manifest for another network.
+- `deploy.js` deploys the local Stage 2 protocol, assigns the LendingPool once as vault controller and DBUSD minter/burner, and writes a chain-address manifest.
+- `export-frontend-artifacts.js` copies the five public contract ABIs and the selected address manifest into `frontend/src/contracts/`.
 
+Run `pnpm deploy:local` after compilation. The default Hardhat network is ephemeral; the exported local addresses are development fixtures, not production deployment evidence.

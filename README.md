@@ -2,16 +2,16 @@
 
 Aegis Bank is a non-custodial lending application where users will deposit ETH collateral, borrow a protocol-issued stablecoin, repay debt and interest, withdraw safe collateral, monitor position health, and liquidate eligible unhealthy positions for a bonus.
 
-The project is being implemented stage by stage from the approved implementation plan. Stage 1 establishes a production-minded repository and a modern frontend foundation; financial smart-contract behavior begins in Stage 2.
+The project is being implemented stage by stage from the approved implementation plan. Stage 1 established the repository and frontend foundation. Stage 2 implements the local protocol contracts, tests, deployment wiring, and frontend ABI/address export.
 
-> **Security status:** Foundation only. No deployed contracts exist yet. This repository is not audited and must not be used with real funds.
+> **Security status:** Local-development contracts only. The protocol is unaudited, uses an owner-updated test oracle, and must not be used with real funds.
 
 ## Current status
 
 | Stage | Scope | Status |
 | --- | --- | --- |
-| 1 | Repository, Next.js/Tailwind foundation, design primitives, CI and contribution standards | Ready for review |
-| 2 | Solidity interfaces and protocol contracts | Not started |
+| 1 | Repository, Next.js/Tailwind foundation, design primitives, CI and contribution standards | Complete |
+| 2 | Solidity interfaces, protocol contracts, focused tests and local deployment | Ready for review |
 | 3 | Contract hardening, invariants, fuzzing and deployment workflow | Not started |
 | 4 | Wallet connection and on-chain read layer | Not started |
 | 5 | Deposit, withdraw, borrow, repay and liquidation transactions | Not started |
@@ -29,7 +29,8 @@ The project is being implemented stage by stage from the approved implementation
 | Styling | Tailwind CSS 4.3.3 | Low-level utilities enable a fully custom visual system without a component framework |
 | Smart-contract tooling | Hardhat 3.13.0 | Compilation, local network, test and deployment foundation for Solidity |
 | Solidity baseline | 0.8.30 | Explicit compiler pin with checked arithmetic and optimizer support; revisited before protocol implementation |
-| Unit testing | Vitest | Fast, focused JavaScript tests with a small setup surface |
+| Contract library | OpenZeppelin Contracts 5.6.1 | Audited ERC-20, ownership, reentrancy and arithmetic building blocks |
+| Unit testing | Mocha/Chai for contracts; Vitest for frontend | Focused JavaScript suites with behavior-specific files |
 | Package management | pnpm 11.19.0 workspace | Fast deterministic installs with one lockfile for protocol and frontend |
 | Automation | GitHub Actions | Reproducible lint, test, build and compile checks on pull requests |
 
@@ -84,8 +85,21 @@ pnpm lint             # Frontend lint rules
 pnpm test             # Contract and frontend tests
 pnpm build            # Production Next.js build
 pnpm compile          # Solidity compilation
-pnpm check            # Complete Stage 1 quality gate
+pnpm deploy:local     # Deploy and export local ABI/address fixtures
+pnpm check            # Complete repository quality gate
 ```
+
+## Stage 2 protocol
+
+The protocol is split into five narrow modules:
+
+- `CollateralVault` holds native ETH and can move it only when instructed by the permanently assigned LendingPool.
+- `Stablecoin` is the DBUSD ERC-20; only the permanently assigned LendingPool can mint or burn it.
+- `InterestEngine` implements the documented utilization curve: 2% at zero utilization, 10% at 80%, and 18% at 100%.
+- `PriceOracle` supplies an 8-decimal ETH/USD price with freshness checks for local development and tests.
+- `LendingPool` coordinates deposit, withdrawal, borrowing, repayment, lazy interest accrual, health checks, and liquidation.
+
+The documented risk parameters are 150% collateralization, an 85% liquidation threshold, a 7% liquidation bonus, 100% close factor for source-compatible one-click liquidation, and 0.01 DBUSD minimum residual debt. See [the Stage 2 architecture decision](docs/adr/0003-protocol-architecture-and-risk-parameters.md) for assumptions and trade-offs.
 
 ## Product architecture
 
@@ -132,11 +146,14 @@ Every optimization must include a before/after gas report and must not weaken ac
 
 ## Security assumptions and limits
 
-- Stage 1 contains no financial contract implementation.
-- Future collateral and debt calculations will use integer base units, never JavaScript floating-point arithmetic.
+- Stage 2 is local-development software and has not been audited or approved for testnet/mainnet use.
+- Collateral and debt calculations use integer base units and OpenZeppelin `Math.mulDiv`, never floating-point arithmetic.
 - Oracle freshness, decimal scaling and manipulation resistance are protocol-critical.
 - Healthy positions must never be liquidatable; unsafe withdrawals and over-borrowing must revert.
 - Only authorized protocol contracts may mint or burn the stablecoin.
+- The local manual oracle owner is trusted and can move every account's health factor; a production oracle adapter is mandatory before a public deployment.
+- Interest is accrued lazily when an account is touched. Aggregate debt can temporarily exclude interest not yet materialized for inactive accounts.
+- Repayment burns DBUSD directly from the caller under LendingPool authority, matching the source behavior without an allowance transaction.
 - Private keys, seed phrases and production secrets must never be committed.
 - Mainnet use requires a separate threat model, independent audit, operational controls and explicit approval.
 
