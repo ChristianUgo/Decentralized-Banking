@@ -38,7 +38,9 @@ export function normalizeProtocolResults({
   const account = accountResult
     ? {
         collateralAmount: readField(accountResult, "collateralAmount", 0),
-        borrowedAmount: readField(accountResult, "borrowedAmount", 1),
+        storedBorrowedAmount: readField(accountResult, "borrowedAmount", 1),
+        borrowedAmount:
+          accountReads?.previewDebt ?? readField(accountResult, "borrowedAmount", 1),
         lastInterestUpdate: readField(accountResult, "lastInterestUpdate", 2),
         ...accountReads,
       }
@@ -97,12 +99,15 @@ export function createProtocolReader({
     let accountResult = null;
     let accountReads = null;
     if (accountAddress) {
-      const [position, collateralValue, healthFactor, borrowingPower, stablecoinBalance, walletEthBalance, isLiquidatable] =
+      const [position, previewDebt, previewInterest, collateralValue, healthFactor, borrowingPower, maxLiquidatableDebt, stablecoinBalance, walletEthBalance, isLiquidatable] =
         await Promise.all([
           lendingPool.getAccount(accountAddress),
+          lendingPool.previewDebt(accountAddress),
+          lendingPool.previewInterest(accountAddress),
           lendingPool.getCollateralValue(accountAddress),
           lendingPool.getHealthFactor(accountAddress),
           lendingPool.getBorrowingPower(accountAddress),
+          lendingPool.getMaxLiquidatableDebt(accountAddress),
           stablecoin.balanceOf(accountAddress),
           provider.getBalance(accountAddress),
           lendingPool.isLiquidatable(accountAddress),
@@ -113,6 +118,9 @@ export function createProtocolReader({
         collateralValue,
         healthFactor,
         isLiquidatable,
+        maxLiquidatableDebt,
+        previewDebt,
+        previewInterest,
         stablecoinBalance,
         walletEthBalance,
       };

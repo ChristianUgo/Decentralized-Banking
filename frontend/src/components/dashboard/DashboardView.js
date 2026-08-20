@@ -120,7 +120,7 @@ export function DashboardView() {
                 ))}
               </div>
               <p className="mt-5 text-xs leading-5 text-mist-300">
-                Stage 4 is read-only. Transaction review and wallet signatures arrive in Stage 5.
+                Every action validates values, simulates the contract call and presents a final review before requesting a wallet signature.
               </p>
             </section>
           </div>

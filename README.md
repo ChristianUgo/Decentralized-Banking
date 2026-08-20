@@ -2,7 +2,7 @@
 
 Aegis Bank is a non-custodial lending application where users will deposit ETH collateral, borrow a protocol-issued stablecoin, repay debt and interest, withdraw safe collateral, monitor position health, and liquidate eligible unhealthy positions for a bonus.
 
-The project is being implemented stage by stage from the approved implementation plan. Stages 1–3 established the frontend foundation, local protocol, and hardening gates. Stage 4 connects browser wallets and resolves account and protocol state directly from the deployed contracts.
+The project is being implemented stage by stage from the approved implementation plan. Stages 1–4 established the frontend foundation, hardened local protocol, browser-wallet lifecycle, and on-chain read layer. Stage 5 adds guarded write journeys with preflight simulation, explicit signing and confirmation states, and post-confirmation refresh.
 
 > **Security status:** Local-development contracts only. The protocol is unaudited, uses an owner-updated test oracle, and must not be used with real funds.
 
@@ -13,8 +13,8 @@ The project is being implemented stage by stage from the approved implementation
 | 1 | Repository, Next.js/Tailwind foundation, design primitives, CI and contribution standards | Complete |
 | 2 | Solidity interfaces, protocol contracts, focused tests and local deployment | Complete (PR #6) |
 | 3 | Contract hardening, invariants, fuzzing, gas and static analysis | Complete (PR #7) |
-| 4 | Wallet connection and on-chain read layer | Ready for review |
-| 5 | Deposit, withdraw, borrow, repay and liquidation transactions | Not started |
+| 4 | Wallet connection and on-chain read layer | Complete |
+| 5 | Deposit, withdraw, borrow, repay and liquidation transactions | Ready for review |
 | 6 | Complete responsive UI/UX and accessibility | Not started |
 | 7 | Integrated QA and testnet release | Not started |
 | 8 | GitHub release and production frontend deployment | Not started |
@@ -136,6 +136,14 @@ The dashboard resolves collateral, collateral value, previewed debt, borrowing p
 
 See [ADR 0005](docs/adr/0005-wallet-and-read-layer.md) for the provider boundary, wallet assumptions and deferred Stage 5 transaction scope.
 
+## Stage 5 transaction layer
+
+Stage 5 replaces every transaction placeholder with a complete local-chain journey. Deposit and withdrawal share a collateral workspace; borrow and repay expose capacity, debt and health previews; liquidation validates a borrower, resolves eligibility, estimates repayable debt and collateral reward, and requires an explicit risk acknowledgement.
+
+Every write follows one state model: validate input, simulate the exact contract call, estimate gas, review, request the wallet signature, expose the submitted hash, wait for a successful receipt, then refresh affected reads. Account or network changes invalidate prepared transactions. DBUSD repayment and liquidation use the protocol's direct-burn authority and do not create a misleading allowance step.
+
+See [ADR 0006](docs/adr/0006-transaction-lifecycle-and-preflight.md) for the transaction boundary, preview assumptions, and confirmation model.
+
 ## Product architecture
 
 The final application will have four clear layers:
@@ -190,6 +198,8 @@ Every optimization must include a before/after gas report and must not weaken ac
 - Interest is accrued lazily when an account is touched. Aggregate debt can temporarily exclude interest not yet materialized for inactive accounts.
 - Injected wallet availability, authorization and chain switching are controlled by the user's wallet. The Stage 4 local disconnect clears application state but cannot revoke wallet permissions.
 - Public RPC endpoints are untrusted availability dependencies. The client verifies contract bytecode at the generated addresses before accepting a read source.
+- Stage 5 preflight simulation reduces avoidable wallet prompts but cannot guarantee execution because price, interest, balances, gas and ordering may change before mining.
+- A submitted transaction hash is pending evidence, not success. The interface refreshes financial state only after a successful receipt.
 - Repayment burns DBUSD directly from the caller under LendingPool authority, matching the source behavior without an allowance transaction.
 - Private keys, seed phrases and production secrets must never be committed.
 - Mainnet use requires a separate threat model, independent audit, operational controls and explicit approval.
