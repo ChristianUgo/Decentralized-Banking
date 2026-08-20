@@ -20,6 +20,17 @@ This project is under active development. Stage 3 contracts are intended only fo
 
 See the [Stage 3 threat model](docs/security/threat-model.md), [static-analysis policy](docs/security/static-analysis.md), and [gas baseline](docs/security/gas-baseline.md).
 
+## Stage 4 wallet and read-layer assumptions
+
+- Wallet discovery is limited to an injected EIP-1193 provider. The application never requests accounts until the user selects Connect.
+- The browser wallet remains responsible for account authorization and network approval. Local disconnect does not revoke permissions inside the wallet.
+- Account reads are shown only on the supported generated chain ID. Protocol-wide reads use the configured public RPC endpoint and validate deployed bytecode before the first snapshot.
+- RPC responses are availability inputs, not authorization. Protocol risk enforcement remains in Solidity.
+- Stage 4 contains no transaction preparation, simulation, signature or broadcast path.
+- `NEXT_PUBLIC_RPC_URL` is public by definition and must never contain a secret provider credential intended to remain confidential.
+
+See [ADR 0005](docs/adr/0005-wallet-and-read-layer.md) for the detailed boundary and trade-offs.
+
 ## Reporting a vulnerability
 
 Do not open a public issue for a suspected vulnerability involving loss of funds, authorization, oracle manipulation, reentrancy, arithmetic, liquidation or secret exposure. Contact the repository owner privately with:

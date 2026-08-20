@@ -2,6 +2,7 @@ import "./globals.css";
 
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
+import { WalletProvider } from "@/providers/WalletProvider";
 
 export const metadata = {
   title: { default: "Aegis Bank", template: "%s | Aegis Bank" },
@@ -11,7 +12,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html data-scroll-behavior="smooth" lang="en">
       <body className="min-h-screen antialiased">
         <a
           className="sr-only z-50 rounded-md bg-electric-300 px-4 py-3 font-semibold text-ink-950 focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
@@ -19,11 +20,12 @@ export default function RootLayout({ children }) {
         >
           Skip to content
         </a>
-        <SiteHeader />
-        {children}
-        <SiteFooter />
+        <WalletProvider>
+          <SiteHeader />
+          {children}
+          <SiteFooter />
+        </WalletProvider>
       </body>
     </html>
   );
 }
-

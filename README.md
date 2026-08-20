@@ -2,7 +2,7 @@
 
 Aegis Bank is a non-custodial lending application where users will deposit ETH collateral, borrow a protocol-issued stablecoin, repay debt and interest, withdraw safe collateral, monitor position health, and liquidate eligible unhealthy positions for a bonus.
 
-The project is being implemented stage by stage from the approved implementation plan. Stage 1 established the repository and frontend foundation. Stage 2 implements the local protocol contracts, tests, deployment wiring, and frontend ABI/address export.
+The project is being implemented stage by stage from the approved implementation plan. Stages 1–3 established the frontend foundation, local protocol, and hardening gates. Stage 4 connects browser wallets and resolves account and protocol state directly from the deployed contracts.
 
 > **Security status:** Local-development contracts only. The protocol is unaudited, uses an owner-updated test oracle, and must not be used with real funds.
 
@@ -12,8 +12,8 @@ The project is being implemented stage by stage from the approved implementation
 | --- | --- | --- |
 | 1 | Repository, Next.js/Tailwind foundation, design primitives, CI and contribution standards | Complete |
 | 2 | Solidity interfaces, protocol contracts, focused tests and local deployment | Complete (PR #6) |
-| 3 | Contract hardening, invariants, fuzzing, gas and static analysis | Ready for review |
-| 4 | Wallet connection and on-chain read layer | Not started |
+| 3 | Contract hardening, invariants, fuzzing, gas and static analysis | Complete (PR #7) |
+| 4 | Wallet connection and on-chain read layer | Ready for review |
 | 5 | Deposit, withdraw, borrow, repay and liquidation transactions | Not started |
 | 6 | Complete responsive UI/UX and accessibility | Not started |
 | 7 | Integrated QA and testnet release | Not started |
@@ -27,6 +27,7 @@ The project is being implemented stage by stage from the approved implementation
 | Web application | Next.js 16.3.1 App Router | Current stable framework, server-first routing and a strong production build pipeline |
 | UI language | React 19.2.8 with JavaScript/JSX | Meets the no-TypeScript requirement while keeping component boundaries explicit |
 | Styling | Tailwind CSS 4.3.3 | Low-level utilities enable a fully custom visual system without a component framework |
+| Web3 client | ethers 6.17.0 with EIP-1193 | Small injected-wallet boundary, exact bigint formatting and direct contract reads |
 | Smart-contract tooling | Hardhat 3.13.0 | Compilation, local network, test and deployment foundation for Solidity |
 | Solidity baseline | 0.8.30 | Explicit compiler pin with checked arithmetic and optimizer support; revisited before protocol implementation |
 | Contract library | OpenZeppelin Contracts 5.6.1 | Audited ERC-20, ownership, reentrancy and arithmetic building blocks |
@@ -48,7 +49,9 @@ Dependency versions are pinned in `pnpm-lock.yaml`. They are reviewed again at e
 ├── frontend/
 │   ├── src/app/            # App Router pages
 │   ├── src/components/     # Project-owned UI primitives
-│   └── src/lib/            # Shared navigation and domain helpers
+│   ├── src/hooks/          # On-chain read lifecycle
+│   ├── src/providers/      # Client wallet boundary
+│   └── src/lib/            # Wallet store, read client and domain helpers
 ├── docs/adr/               # Architectural decision records
 ├── .github/                # CI, PR and issue templates
 ├── hardhat.config.js
@@ -80,6 +83,16 @@ pnpm dev
 
 Open `http://localhost:3000`.
 
+For live local reads, run the local node and deployment in separate terminals before starting the frontend:
+
+```bash
+pnpm node:local
+pnpm deploy:localhost
+pnpm dev
+```
+
+Copy `frontend/.env.example` to `frontend/.env.local` only when the RPC endpoint differs from the documented local default. Never commit provider credentials.
+
 ### Useful commands
 
 ```bash
@@ -88,6 +101,8 @@ pnpm test             # Contract and frontend tests
 pnpm build            # Production Next.js build
 pnpm compile          # Solidity compilation
 pnpm deploy:local     # Deploy and export local ABI/address fixtures
+pnpm node:local       # Start the persistent local Hardhat JSON-RPC node
+pnpm deploy:localhost # Deploy/export against the running local node
 pnpm test:invariants  # Seeded fuzz and multi-account invariant suites
 pnpm gas:report       # Gas baseline and regression ceilings
 pnpm lint:contracts   # Zero-warning Solidity static/lint gate
@@ -112,6 +127,14 @@ The documented risk parameters are 150% collateralization, an 85% liquidation th
 Stage 3 adds explicit liquidation and health boundaries, two-account randomized state transitions, fuzzed interest math, malicious ETH receiver coverage, ownership and module validation, dependency auditing, gas ceilings, Solhint, and a pinned Slither version in CI. The protocol now snapshots a normalized oracle price during liquidation and caches validated oracle decimals, reducing liquidation gas by 4.69% in the deterministic baseline.
 
 See the [threat model](docs/security/threat-model.md), [static-analysis policy](docs/security/static-analysis.md), and [gas baseline](docs/security/gas-baseline.md). These controls improve evidence; they do not make the protocol audited or production-safe.
+
+## Stage 4 wallet and read layer
+
+Stage 4 adds injected EIP-1193 wallet detection, permission-based connection, local disconnect, account/network event handling, supported-network switch/add requests, deployment validation, protocol-wide reads without a wallet, connected-account reads, resilient loading/error states, manual refresh and 15-second background refresh.
+
+The dashboard resolves collateral, collateral value, previewed debt, borrowing power, DBUSD balance, health, liquidation eligibility, protocol totals, utilization, borrow APR, oracle price and block height directly from the deployed contracts. Values remain `bigint` until formatting; account state is never mirrored in a database or calculated with floating point.
+
+See [ADR 0005](docs/adr/0005-wallet-and-read-layer.md) for the provider boundary, wallet assumptions and deferred Stage 5 transaction scope.
 
 ## Product architecture
 
@@ -165,6 +188,8 @@ Every optimization must include a before/after gas report and must not weaken ac
 - Only authorized protocol contracts may mint or burn the stablecoin.
 - The local manual oracle owner is trusted and can move every account's health factor; a production oracle adapter is mandatory before a public deployment.
 - Interest is accrued lazily when an account is touched. Aggregate debt can temporarily exclude interest not yet materialized for inactive accounts.
+- Injected wallet availability, authorization and chain switching are controlled by the user's wallet. The Stage 4 local disconnect clears application state but cannot revoke wallet permissions.
+- Public RPC endpoints are untrusted availability dependencies. The client verifies contract bytecode at the generated addresses before accepting a read source.
 - Repayment burns DBUSD directly from the caller under LendingPool authority, matching the source behavior without an allowance transaction.
 - Private keys, seed phrases and production secrets must never be committed.
 - Mainnet use requires a separate threat model, independent audit, operational controls and explicit approval.

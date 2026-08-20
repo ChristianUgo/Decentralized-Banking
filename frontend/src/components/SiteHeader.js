@@ -4,6 +4,7 @@ import { primaryNavigation } from "@/lib/navigation";
 
 import { Container } from "./Container";
 import { Logo } from "./Logo";
+import { WalletButton } from "./wallet/WalletButton";
 
 export function SiteHeader() {
   return (
@@ -21,20 +22,8 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
-        <div className="flex items-center gap-3">
-          <span className="hidden text-xs font-medium text-mist-300 sm:inline">
-            Wallet integration · Stage 4
-          </span>
-          <button
-            className="min-h-10 rounded-full border border-electric-300/25 bg-electric-300/8 px-4 text-sm font-semibold text-electric-300 opacity-70"
-            disabled
-            type="button"
-          >
-            Connect wallet
-          </button>
-        </div>
+        <WalletButton />
       </Container>
     </header>
   );
 }
-
