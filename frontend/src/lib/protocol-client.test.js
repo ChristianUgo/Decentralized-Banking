@@ -10,8 +10,11 @@ function createFixture() {
     getBorrowingPower: vi.fn().mockResolvedValue(7n),
     getCollateralValue: vi.fn().mockResolvedValue(10n),
     getHealthFactor: vi.fn().mockResolvedValue(2n),
+    getMaxLiquidatableDebt: vi.fn().mockResolvedValue(3n),
     getProtocolStats: vi.fn().mockResolvedValue([5n, 10n, 3n, 4n, 6n]),
     isLiquidatable: vi.fn().mockResolvedValue(false),
+    previewDebt: vi.fn().mockResolvedValue(4n),
+    previewInterest: vi.fn().mockResolvedValue(1n),
   };
   const priceOracle = {
     getEthUsdPrice: vi.fn().mockResolvedValue(2_000n * 10n ** 8n),
@@ -36,12 +39,15 @@ describe("protocol reader", () => {
 
     expect(result).toMatchObject({
       account: {
-        borrowedAmount: 3n,
+        borrowedAmount: 4n,
         borrowingPower: 7n,
         collateralAmount: 5n,
         collateralValue: 10n,
         healthFactor: 2n,
+        maxLiquidatableDebt: 3n,
+        previewInterest: 1n,
         stablecoinBalance: 8n,
+        storedBorrowedAmount: 3n,
         walletEthBalance: 11n,
       },
       blockNumber: 42,

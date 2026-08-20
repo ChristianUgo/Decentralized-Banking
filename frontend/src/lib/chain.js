@@ -21,6 +21,7 @@ export const targetChain = Object.freeze({
   hexId: toHexChainId(deployment.chainId),
   name: "Hardhat Local",
   rpcUrl: process.env.NEXT_PUBLIC_RPC_URL || DEFAULT_RPC_URL,
+  explorerUrl: process.env.NEXT_PUBLIC_EXPLORER_URL || null,
   nativeCurrency: Object.freeze({ name: "Ether", symbol: "ETH", decimals: 18 }),
 });
 

@@ -31,6 +31,16 @@ See the [Stage 3 threat model](docs/security/threat-model.md), [static-analysis 
 
 See [ADR 0005](docs/adr/0005-wallet-and-read-layer.md) for the detailed boundary and trade-offs.
 
+## Stage 5 transaction assumptions
+
+- Write actions require a supported-chain wallet, exact base-unit input validation, a successful static-call preflight and explicit final review.
+- Preflight and UI impact values are estimates. Contracts remain authoritative if oracle price, lazy interest, balances or transaction ordering change before execution.
+- The UI treats a transaction as successful only after a receipt with status `1`; a submitted hash is never described as finality.
+- Account or chain changes invalidate prepared transactions and require a new review.
+- Repayment and liquidation intentionally do not request ERC-20 approval because the permanently assigned LendingPool burns DBUSD directly from the caller.
+
+See [ADR 0006](docs/adr/0006-transaction-lifecycle-and-preflight.md) for the shared write lifecycle.
+
 ## Reporting a vulnerability
 
 Do not open a public issue for a suspected vulnerability involving loss of funds, authorization, oracle manipulation, reentrancy, arithmetic, liquidation or secret exposure. Contact the repository owner privately with:

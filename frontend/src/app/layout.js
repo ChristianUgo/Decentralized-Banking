@@ -2,6 +2,8 @@ import "./globals.css";
 
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
+import { TransactionStatus } from "@/components/transaction/TransactionStatus";
+import { TransactionProvider } from "@/providers/TransactionProvider";
 import { WalletProvider } from "@/providers/WalletProvider";
 
 export const metadata = {
@@ -21,9 +23,12 @@ export default function RootLayout({ children }) {
           Skip to content
         </a>
         <WalletProvider>
-          <SiteHeader />
-          {children}
-          <SiteFooter />
+          <TransactionProvider>
+            <SiteHeader />
+            {children}
+            <SiteFooter />
+            <TransactionStatus />
+          </TransactionProvider>
         </WalletProvider>
       </body>
     </html>

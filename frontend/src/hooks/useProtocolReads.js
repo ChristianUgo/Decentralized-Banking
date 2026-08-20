@@ -33,9 +33,12 @@ export function useProtocolReads(accountAddress = null) {
   useEffect(() => {
     void load();
     const interval = globalThis.setInterval(() => void load(), REFRESH_INTERVAL);
+    const refreshAfterTransaction = () => void load();
+    globalThis.addEventListener("aegis:transaction-confirmed", refreshAfterTransaction);
     return () => {
       requestId.current += 1;
       globalThis.clearInterval(interval);
+      globalThis.removeEventListener("aegis:transaction-confirmed", refreshAfterTransaction);
     };
   }, [load]);
 

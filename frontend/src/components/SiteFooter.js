@@ -7,10 +7,9 @@ export function SiteFooter() {
       <Container className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
         <Logo />
         <p className="max-w-xl text-sm leading-6 text-mist-300 sm:text-right">
-          Foundation release. No contracts are deployed and no real funds should be used.
+          Local-development protocol. Contracts are unaudited and no real funds should be used.
         </p>
       </Container>
     </footer>
   );
 }
-

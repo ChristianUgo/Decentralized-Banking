@@ -18,8 +18,8 @@ export function WalletCallout() {
   const description = unsupported
     ? `Switch to ${targetChain.name} before account-specific reads are displayed.`
     : unavailable
-      ? "Protocol totals remain read-only, but account data requires a browser wallet."
-      : error || "Connection is read-only in Stage 4; transactions remain disabled.";
+      ? "Protocol totals remain readable, but account data and transactions require a browser wallet."
+      : error || "Connect to inspect your position and prepare protocol transactions.";
 
   return (
     <section className="flex flex-col gap-5 rounded-3xl border border-electric-300/18 bg-electric-300/[0.055] p-6 sm:flex-row sm:items-center sm:justify-between">

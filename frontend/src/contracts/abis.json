@@ -607,6 +607,11 @@
     },
     {
       "inputs": [],
+      "name": "InvalidOraclePrice",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "NoDebt",
       "type": "error"
     },
