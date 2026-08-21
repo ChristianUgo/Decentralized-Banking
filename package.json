@@ -45,7 +45,7 @@
     "@nomicfoundation/hardhat-network-helpers": "3.0.11",
     "@playwright/test": "1.62.1",
     "chai": "6.2.2",
-    "eslint": "9.39.2",
+    "eslint": "10.8.1",
     "ethers": "6.17.0",
     "fast-check": "4.9.0",
     "hardhat": "3.13.0",
