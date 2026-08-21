@@ -13,6 +13,9 @@ function requireAddress(name) {
 }
 
 export function createReadProvider() {
+  if (!targetChain.rpcUrl) {
+    throw new Error(`Set NEXT_PUBLIC_RPC_URL for ${targetChain.name}.`);
+  }
   return new JsonRpcProvider(targetChain.rpcUrl, targetChain.id, { staticNetwork: true });
 }
 

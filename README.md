@@ -2,7 +2,7 @@
 
 Aegis Bank is a non-custodial lending application where users will deposit ETH collateral, borrow a protocol-issued stablecoin, repay debt and interest, withdraw safe collateral, monitor position health, and liquidate eligible unhealthy positions for a bonus.
 
-The project is being implemented stage by stage from the approved implementation plan. Stages 1–5 established the frontend foundation, hardened local protocol, browser-wallet lifecycle, on-chain reads, and guarded write journeys. Stage 6 completes the responsive interaction system and accessibility pass without changing protocol behavior.
+The project is being implemented stage by stage from the approved implementation plan. Stages 1–6 established the frontend foundation, hardened local protocol, browser-wallet lifecycle, on-chain reads, guarded write journeys, and responsive accessibility layer. Stage 7 adds integrated browser QA and a controlled Sepolia release path.
 
 > **Security status:** Local-development contracts only. The protocol is unaudited, uses an owner-updated test oracle, and must not be used with real funds.
 
@@ -15,8 +15,8 @@ The project is being implemented stage by stage from the approved implementation
 | 3 | Contract hardening, invariants, fuzzing, gas and static analysis | Complete (PR #7) |
 | 4 | Wallet connection and on-chain read layer | Complete |
 | 5 | Deposit, withdraw, borrow, repay and liquidation transactions | Complete |
-| 6 | Complete responsive UI/UX and accessibility | Ready for review |
-| 7 | Integrated QA and testnet release | Not started |
+| 6 | Complete responsive UI/UX and accessibility | Complete (PR #11) |
+| 7 | Integrated QA and testnet release | Ready for review |
 | 8 | GitHub release and production frontend deployment | Not started |
 | 9 | Interview guide based on the deployed release | Not started |
 
@@ -33,6 +33,7 @@ The project is being implemented stage by stage from the approved implementation
 | Contract library | OpenZeppelin Contracts 5.6.1 | Audited ERC-20, ownership, reentrancy and arithmetic building blocks |
 | Unit testing | Mocha/Chai for contracts; Vitest for frontend | Focused JavaScript suites with behavior-specific files |
 | Property testing | fast-check 4.9.0 | Seeded interest fuzzing and randomized multi-account action sequences |
+| Browser QA | Playwright 1.62.1 with axe-core 4.13.0 | Real wallet/RPC transaction journeys, WCAG regression checks and responsive verification |
 | Solidity analysis | Solhint 6.2.4 locally; Slither 0.11.6 in CI | Fast zero-warning feedback plus deeper independent Linux analysis |
 | Package management | pnpm 11.19.0 workspace | Fast deterministic installs with one lockfile for protocol and frontend |
 | Automation | GitHub Actions | Reproducible lint, test, build and compile checks on pull requests |
@@ -104,10 +105,14 @@ pnpm deploy:local     # Deploy and export local ABI/address fixtures
 pnpm node:local       # Start the persistent local Hardhat JSON-RPC node
 pnpm deploy:localhost # Deploy/export against the running local node
 pnpm test:invariants  # Seeded fuzz and multi-account invariant suites
+pnpm test:e2e         # Local node, deployment, browser banking journey and accessibility checks
+pnpm test:a11y        # Focused automated WCAG and narrow-viewport checks
 pnpm gas:report       # Gas baseline and regression ceilings
 pnpm lint:contracts   # Zero-warning Solidity static/lint gate
 pnpm audit:dependencies # High-severity dependency gate
 pnpm check            # Complete repository quality gate
+pnpm deploy:sepolia   # Explicit public-testnet broadcast; requires dedicated credentials
+pnpm verify:sepolia   # Read-only Sepolia bytecode, wiring and ownership verification
 ```
 
 ## Stage 2 protocol
@@ -149,6 +154,12 @@ See [ADR 0006](docs/adr/0006-transaction-lifecycle-and-preflight.md) for the tra
 Stage 6 completes the custom responsive shell with active-route navigation, an accessible mobile menu, compact small-screen wallet controls, minimum touch targets, overflow-safe financial values, and an expanded release footer. Banking forms expose persistent instructions and errors, transaction progress uses live status semantics, health is represented as a named meter, and keyboard focus remains visible throughout every journey.
 
 The interface respects reduced-motion, increased-contrast, and forced-color preferences. It targets WCAG 2.2 AA practices but is not certified or independently audited. See [ADR 0007](docs/adr/0007-responsive-and-accessible-interface.md) and the [accessibility acceptance guide](docs/accessibility.md).
+
+## Stage 7 integrated QA and testnet release
+
+Stage 7 runs the complete browser boundary against a fresh Hardhat deployment. A Playwright-controlled EIP-1193 wallet uses unlocked local accounts while the application still performs its production ethers reads, simulations, gas estimates, submissions, receipt checks, and refreshes. The primary journey covers deposit, borrow, repay, and safe withdrawal; axe-core scans every route for automated WCAG A/AA violations and the same routes are checked for narrow-screen overflow.
+
+Sepolia deployment is configured but intentionally manual. A release owner must use a dedicated test-only account, run the full gates, broadcast explicitly, commit the generated public manifest, and capture explorer evidence. The read-only verifier confirms chain identity, bytecode, immutable topology, protocol authorities, and oracle ownership. See [ADR 0008](docs/adr/0008-integrated-qa-and-testnet-release.md) and the [Sepolia release runbook](docs/testnet-release.md).
 
 ## Product architecture
 
@@ -195,7 +206,7 @@ Every optimization must include a before/after gas report and must not weaken ac
 
 ## Security assumptions and limits
 
-- Stage 3 remains local-development software and has not been audited or approved for testnet/mainnet use.
+- The code is unaudited. Sepolia is permitted only for a zero-real-value demonstration; mainnet and real funds are explicitly prohibited.
 - Collateral and debt calculations use integer base units and OpenZeppelin `Math.mulDiv`, never floating-point arithmetic.
 - Oracle freshness, decimal scaling and manipulation resistance are protocol-critical.
 - Healthy positions must never be liquidatable; unsafe withdrawals and over-borrowing must revert.

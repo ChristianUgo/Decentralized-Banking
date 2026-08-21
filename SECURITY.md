@@ -2,7 +2,7 @@
 
 ## Project status
 
-This project is under active development. Stage 3 contracts are intended only for local development. They have not been audited and are not approved for testnet, mainnet or real-value use.
+This project is under active development and has not been audited. Stage 7 permits a zero-real-value Sepolia demonstration under the release runbook. Mainnet deployment and use with real funds remain prohibited.
 
 ## Protocol trust assumptions and Stage 3 controls
 
@@ -38,6 +38,18 @@ See [ADR 0005](docs/adr/0005-wallet-and-read-layer.md) for the detailed boundary
 - The UI treats a transaction as successful only after a receipt with status `1`; a submitted hash is never described as finality.
 - Account or chain changes invalidate prepared transactions and require a new review.
 - Repayment and liquidation intentionally do not request ERC-20 approval because the permanently assigned LendingPool burns DBUSD directly from the caller.
+
+## Stage 7 QA and testnet assumptions
+
+- Playwright uses a local-only injected EIP-1193 harness and unlocked Hardhat accounts. It validates application integration, not third-party wallet extension behavior.
+- Automated axe checks cover detectable WCAG A/AA failures but do not replace manual keyboard, screen-reader, zoom, contrast, and usability review.
+- CI never receives or uses a Sepolia deployment key. Public-chain deployment is an explicit release-owner action.
+- The Sepolia deployer is also the owner-updated oracle administrator. Compromise or misuse can change every account's health and liquidation status.
+- Sepolia contracts are demonstration software with no real-value promise. Testnet success is not evidence of an audit or mainnet readiness.
+- The deployment verifier checks bytecode presence, immutable module topology, authority wiring, and oracle ownership; it does not prove source verification or contract correctness.
+- The protocol is not upgradeable. Failed or compromised testnet deployments must be abandoned and replaced with a new public manifest.
+
+See [ADR 0008](docs/adr/0008-integrated-qa-and-testnet-release.md) and the [testnet release runbook](docs/testnet-release.md).
 
 See [ADR 0006](docs/adr/0006-transaction-lifecycle-and-preflight.md) for the shared write lifecycle.
 
