@@ -1,11 +1,15 @@
 import Link from "next/link";
 
+import deployment from "@/contracts/addresses.json";
 import { primaryNavigation } from "@/lib/navigation";
 
 import { Container } from "./Container";
 import { Logo } from "./Logo";
 
 export function SiteFooter() {
+  const networkName = deployment.chainId === 11155111 ? "Ethereum Sepolia" : "Development network";
+  const release = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || "local";
+
   return (
     <footer className="mt-auto border-t border-white/8 bg-ink-950/55 py-10 sm:py-12">
       <Container>
@@ -29,7 +33,7 @@ export function SiteFooter() {
             </ul>
           </nav>
           <div className="rounded-2xl border border-signal-amber/20 bg-signal-amber/[0.055] p-5">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-signal-amber">Development network only</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-signal-amber">{networkName} demonstration only</p>
             <p className="mt-3 text-sm leading-6 text-mist-200">
               Contracts are unaudited. Never use real funds, production keys, or a mainnet wallet with this release.
             </p>
@@ -37,7 +41,7 @@ export function SiteFooter() {
         </div>
         <div className="flex flex-col gap-2 pt-6 text-xs text-mist-300 sm:flex-row sm:items-center sm:justify-between">
           <p>Built for transparent protocol review.</p>
-          <p>On-chain state remains the source of truth.</p>
+          <p>On-chain state remains the source of truth · Release {release}</p>
         </div>
       </Container>
     </footer>

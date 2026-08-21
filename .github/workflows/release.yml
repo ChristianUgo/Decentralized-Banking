@@ -1,0 +1,102 @@
+name: Production release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Semantic release tag, for example v1.0.0
+        required: true
+        type: string
+      production_url:
+        description: Verified HTTPS production deployment URL
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: production-release
+  cancel-in-progress: false
+
+jobs:
+  verify-and-release:
+    name: Verify production and create GitHub release
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      EXPECTED_COMMIT_SHA: ${{ github.sha }}
+      NEXT_PUBLIC_EXPLORER_URL: https://sepolia.etherscan.io
+      NEXT_PUBLIC_RPC_URL: ${{ secrets.SEPOLIA_PUBLIC_RPC_URL }}
+      NEXT_PUBLIC_SITE_URL: ${{ inputs.production_url }}
+      PRODUCTION_URL: ${{ inputs.production_url }}
+      RELEASE_TAG: ${{ inputs.release_tag }}
+      SEPOLIA_RPC_URL: ${{ secrets.SEPOLIA_PUBLIC_RPC_URL }}
+
+    steps:
+      - name: Check out release commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
+        with:
+          version: 11.19.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Validate release tag
+        shell: bash
+        run: |
+          if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "release_tag must use vMAJOR.MINOR.PATCH format" >&2
+            exit 1
+          fi
+
+      - name: Install pinned dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate production manifest and public configuration
+        run: pnpm release:validate
+
+      - name: Verify deployed Sepolia contracts and authority wiring
+        run: pnpm verify:sepolia
+
+      - name: Run repository quality gate
+        run: pnpm check
+
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Verify deployed production application
+        run: pnpm test:production
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo "Release $RELEASE_TAG already exists; refusing to overwrite it." >&2
+            exit 1
+          fi
+          printf -v RELEASE_NOTES 'Production deployment: %s\n\nNetwork: Ethereum Sepolia (11155111)\nCommit: %s\n' \
+            "$PRODUCTION_URL" "$GITHUB_SHA"
+          gh release create "$RELEASE_TAG" \
+            --target "$GITHUB_SHA" \
+            --title "Aegis Bank $RELEASE_TAG" \
+            --notes "$RELEASE_NOTES" \
+            --generate-notes
+
+      - name: Preserve production failure evidence
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: production-playwright-report
+          path: playwright-report/
+          if-no-files-found: ignore
+          retention-days: 14

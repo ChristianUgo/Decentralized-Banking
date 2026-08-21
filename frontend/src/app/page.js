@@ -26,7 +26,7 @@ export default function HomePage() {
           <div>
             <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-electric-300/20 bg-electric-300/8 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-electric-300">
               <span className="h-1.5 w-1.5 rounded-full bg-electric-300 shadow-[0_0_16px_#71e5ff]" />
-              Responsive transaction workspace · Stage 6
+              Production-ready transaction workspace
             </div>
             <h1 className="max-w-4xl text-balance text-5xl font-semibold leading-[0.98] tracking-[-0.055em] text-white sm:text-7xl lg:text-[5.35rem]">
               Banking logic,

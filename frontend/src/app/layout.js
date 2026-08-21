@@ -6,10 +6,22 @@ import { TransactionStatus } from "@/components/transaction/TransactionStatus";
 import { TransactionProvider } from "@/providers/TransactionProvider";
 import { WalletProvider } from "@/providers/WalletProvider";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+const isProduction = process.env.VERCEL_ENV === "production";
+
 export const metadata = {
+  metadataBase: siteUrl ? new URL(siteUrl) : undefined,
   title: { default: "Aegis Bank", template: "%s | Aegis Bank" },
   description:
     "A modern, non-custodial decentralized banking interface for collateralized borrowing and transparent position health.",
+  openGraph: {
+    description:
+      "Deposit test ETH collateral, borrow DBUSD, repay debt, and inspect protocol health on Ethereum Sepolia.",
+    siteName: "Aegis Bank",
+    title: "Aegis Bank — Decentralized Banking Protocol",
+    type: "website",
+  },
+  robots: { follow: isProduction, index: isProduction },
 };
 
 export default function RootLayout({ children }) {

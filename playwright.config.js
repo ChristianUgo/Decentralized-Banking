@@ -4,6 +4,7 @@ const isContinuousIntegration = Boolean(process.env.CI);
 
 export default defineConfig({
   testDir: "./e2e",
+  testIgnore: "production/**",
   fullyParallel: false,
   forbidOnly: isContinuousIntegration,
   retries: isContinuousIntegration ? 2 : 0,
