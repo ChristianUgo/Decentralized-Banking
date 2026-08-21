@@ -51,6 +51,19 @@ See [ADR 0005](docs/adr/0005-wallet-and-read-layer.md) for the detailed boundary
 
 See [ADR 0008](docs/adr/0008-integrated-qa-and-testnet-release.md) and the [testnet release runbook](docs/testnet-release.md).
 
+## Stage 8 production-hosting assumptions
+
+- “Production” refers to a publicly hosted Sepolia frontend and is not approval for mainnet or real-value use.
+- Production validation requires the committed Sepolia manifest and generated frontend export to match exactly.
+- `NEXT_PUBLIC_RPC_URL`, `NEXT_PUBLIC_EXPLORER_URL`, and `NEXT_PUBLIC_SITE_URL` are public browser configuration and must never contain private credentials.
+- The `/health` route exposes only status, chain, network, and release commit. It must not expose RPC URLs, wallet details, owners, or secret configuration.
+- A GitHub release can be created only after the live site reports the expected full commit and passes remote browser checks.
+- Vercel and the configured RPC provider remain availability dependencies. Stage 8 has no independent error drain or decentralized frontend hosting.
+- Rollback restores a previously verified frontend artifact; it cannot roll back immutable contract state or an already published historical release.
+- GitHub Actions are pinned to immutable commit SHAs for the release candidate.
+
+See [ADR 0009](docs/adr/0009-production-release-and-hosting.md) and the [production release runbook](docs/production-release.md).
+
 See [ADR 0006](docs/adr/0006-transaction-lifecycle-and-preflight.md) for the shared write lifecycle.
 
 ## Stage 6 interface assumptions

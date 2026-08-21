@@ -25,6 +25,7 @@ frontend/.env.local
 .DS_Store
 Thumbs.db
 .idea/
+.vercel/
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json

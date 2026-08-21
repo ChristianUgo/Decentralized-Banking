@@ -2,7 +2,7 @@
 
 Aegis Bank is a non-custodial lending application where users will deposit ETH collateral, borrow a protocol-issued stablecoin, repay debt and interest, withdraw safe collateral, monitor position health, and liquidate eligible unhealthy positions for a bonus.
 
-The project is being implemented stage by stage from the approved implementation plan. Stages 1–6 established the frontend foundation, hardened local protocol, browser-wallet lifecycle, on-chain reads, guarded write journeys, and responsive accessibility layer. Stage 7 adds integrated browser QA and a controlled Sepolia release path.
+The project is being implemented stage by stage from the approved implementation plan. Stages 1–7 established the frontend foundation, hardened protocol, wallet and transaction journeys, responsive accessibility layer, integrated browser QA, and controlled Sepolia release path. Stage 8 adds the production frontend and GitHub release gate.
 
 > **Security status:** Local-development contracts only. The protocol is unaudited, uses an owner-updated test oracle, and must not be used with real funds.
 
@@ -16,8 +16,8 @@ The project is being implemented stage by stage from the approved implementation
 | 4 | Wallet connection and on-chain read layer | Complete |
 | 5 | Deposit, withdraw, borrow, repay and liquidation transactions | Complete |
 | 6 | Complete responsive UI/UX and accessibility | Complete (PR #11) |
-| 7 | Integrated QA and testnet release | Ready for review |
-| 8 | GitHub release and production frontend deployment | Not started |
+| 7 | Integrated QA and testnet release | Complete (PR #12) |
+| 8 | GitHub release and production frontend deployment | Ready for review |
 | 9 | Interview guide based on the deployed release | Not started |
 
 ## Technology
@@ -37,6 +37,8 @@ The project is being implemented stage by stage from the approved implementation
 | Solidity analysis | Solhint 6.2.4 locally; Slither 0.11.6 in CI | Fast zero-warning feedback plus deeper independent Linux analysis |
 | Package management | pnpm 11.19.0 workspace | Fast deterministic installs with one lockfile for protocol and frontend |
 | Automation | GitHub Actions | Reproducible lint, test, build and compile checks on pull requests |
+| Frontend hosting | Vercel Git integration | Commit-addressable previews, production promotion and fast rollback for the nested Next.js app |
+| Release evidence | GitHub Releases and Playwright | A release is published only after manifest, commit, live-route and accessibility verification |
 
 Dependency versions are pinned in `pnpm-lock.yaml`. They are reviewed again at each release instead of floating silently in production.
 
@@ -107,12 +109,15 @@ pnpm deploy:localhost # Deploy/export against the running local node
 pnpm test:invariants  # Seeded fuzz and multi-account invariant suites
 pnpm test:e2e         # Local node, deployment, browser banking journey and accessibility checks
 pnpm test:a11y        # Focused automated WCAG and narrow-viewport checks
+pnpm test:release     # Focused production-manifest and public-URL validation tests
+pnpm test:production  # Remote production health, commit, route and accessibility checks
 pnpm gas:report       # Gas baseline and regression ceilings
 pnpm lint:contracts   # Zero-warning Solidity static/lint gate
 pnpm audit:dependencies # High-severity dependency gate
 pnpm check            # Complete repository quality gate
 pnpm deploy:sepolia   # Explicit public-testnet broadcast; requires dedicated credentials
 pnpm verify:sepolia   # Read-only Sepolia bytecode, wiring and ownership verification
+pnpm release:validate # Fail closed on stale/local manifests or unsafe production URLs
 ```
 
 ## Stage 2 protocol
@@ -160,6 +165,12 @@ The interface respects reduced-motion, increased-contrast, and forced-color pref
 Stage 7 runs the complete browser boundary against a fresh Hardhat deployment. A Playwright-controlled EIP-1193 wallet uses unlocked local accounts while the application still performs its production ethers reads, simulations, gas estimates, submissions, receipt checks, and refreshes. The primary journey covers deposit, borrow, repay, and safe withdrawal; axe-core scans every route for automated WCAG A/AA violations and the same routes are checked for narrow-screen overflow.
 
 Sepolia deployment is configured but intentionally manual. A release owner must use a dedicated test-only account, run the full gates, broadcast explicitly, commit the generated public manifest, and capture explorer evidence. The read-only verifier confirms chain identity, bytecode, immutable topology, protocol authorities, and oracle ownership. See [ADR 0008](docs/adr/0008-integrated-qa-and-testnet-release.md) and the [Sepolia release runbook](docs/testnet-release.md).
+
+## Stage 8 production frontend and GitHub release
+
+Stage 8 adds a Vercel-hosted release boundary for the nested Next.js application. Production validation rejects local or stale deployment manifests, mismatched frontend exports, duplicate addresses, missing transaction evidence, insecure public URLs, and non-Sepolia configuration. The deployed `/health` contract exposes the release commit and network without leaking provider or authority details.
+
+GitHub Releases are manual and fail closed. The release workflow runs only from `main`, repeats repository validation, confirms the live deployment serves the exact commit, scans every route for HTTP, runtime and accessibility failures, and then creates a semantic release. See [ADR 0009](docs/adr/0009-production-release-and-hosting.md) and the [production release runbook](docs/production-release.md).
 
 ## Product architecture
 

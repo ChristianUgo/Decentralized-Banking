@@ -1,6 +1,14 @@
 export default [
   {
-    files: ["e2e/**/*.js", "playwright.config.js", "scripts/verify-testnet-deployment.js"],
+    files: [
+      "e2e/**/*.js",
+      "release-tests/**/*.js",
+      "playwright.config.js",
+      "playwright.production.config.js",
+      "scripts/verify-testnet-deployment.js",
+      "scripts/validate-production-release.js",
+      "scripts/lib/release-validation.js",
+    ],
     languageOptions: {
       ecmaVersion: "latest",
       globals: {
@@ -13,6 +21,8 @@ export default [
         process: "readonly",
         sessionStorage: "readonly",
         Set: "readonly",
+        structuredClone: "readonly",
+        URL: "readonly",
         window: "readonly",
       },
       sourceType: "module",
