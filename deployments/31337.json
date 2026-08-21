@@ -1,6 +1,6 @@
 {
   "chainId": 31337,
-  "network": "default",
+  "network": "localhost",
   "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
   "contracts": {
     "CollateralVault": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
@@ -8,5 +8,14 @@
     "LendingPool": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
     "PriceOracle": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
     "Stablecoin": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9"
+  },
+  "transactions": {
+    "CollateralVault": "0xd2d31456b04357bcec2fadb7aaeb0e6ffc5380af4cb0dd4844ec83edef4a10ed",
+    "InterestEngine": "0x3e8e3d32bd663db975211c2cbd3fdef4ef357c99ff3e11db4365d916bfb0a7a3",
+    "LendingPool": "0xa82c78370557a1ea0186bd8de5f49859f6088e5d231026e7ce34eb4836c0bee9",
+    "PriceOracle": "0x83a071f3694d220ada6b2bb1a33a10c5f08e6c68897c93fa49acda141d2309ce",
+    "Stablecoin": "0x1313817216d894b23eccd36db8cc9c36ce80f077190abbed910851b0cc4bee8d",
+    "StablecoinAuthority": "0xc7303817c5c544dff948b1fd7ffba0584364c5467e28fb43b712bdb56c5b90b9",
+    "VaultAuthority": "0x2ebe10705fd4ef9e101d882a2ad5bf3ed3919ea930ace70a7111ca436fc8d91b"
   }
 }

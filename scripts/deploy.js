@@ -15,7 +15,7 @@ async function main() {
   const deployerAddress = await deployer.getAddress();
   const chainId = Number((await ethers.provider.getNetwork()).chainId);
 
-  console.log(`Deploying Stage 2 protocol to ${networkName} (${chainId})`);
+  console.log(`Deploying Aegis protocol to ${networkName} (${chainId})`);
   console.log(`Deployer: ${deployerAddress}`);
 
   const {
@@ -24,6 +24,7 @@ async function main() {
     lendingPool,
     priceOracle,
     stablecoin,
+    transactions,
   } = await deployProtocol(ethers);
   const lendingPoolAddress = await lendingPool.getAddress();
 
@@ -38,6 +39,7 @@ async function main() {
       PriceOracle: await priceOracle.getAddress(),
       Stablecoin: await stablecoin.getAddress(),
     },
+    transactions,
   };
 
   const deploymentsDirectory = path.join(repositoryRoot, "deployments");
@@ -48,7 +50,7 @@ async function main() {
   );
   await exportFrontendArtifacts(manifest);
 
-  console.log("Stage 2 protocol deployed and frontend artifacts exported.");
+  console.log("Aegis protocol deployed and frontend artifacts exported.");
   console.table(manifest.contracts);
 }
 

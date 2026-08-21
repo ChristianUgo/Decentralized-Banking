@@ -35,8 +35,10 @@ export async function deployProtocol(
   ]);
 
   const lendingPoolAddress = await lendingPool.getAddress();
-  await (await collateralVault.setLendingPool(lendingPoolAddress)).wait();
-  await (await stablecoin.setLendingPool(lendingPoolAddress)).wait();
+  const vaultAuthorityTransaction = await collateralVault.setLendingPool(lendingPoolAddress);
+  await vaultAuthorityTransaction.wait();
+  const tokenAuthorityTransaction = await stablecoin.setLendingPool(lendingPoolAddress);
+  await tokenAuthorityTransaction.wait();
 
   return {
     owner,
@@ -48,5 +50,14 @@ export async function deployProtocol(
     collateralVault,
     stablecoin,
     lendingPool,
+    transactions: {
+      CollateralVault: collateralVault.deploymentTransaction()?.hash,
+      InterestEngine: interestEngine.deploymentTransaction()?.hash,
+      LendingPool: lendingPool.deploymentTransaction()?.hash,
+      PriceOracle: priceOracle.deploymentTransaction()?.hash,
+      Stablecoin: stablecoin.deploymentTransaction()?.hash,
+      StablecoinAuthority: tokenAuthorityTransaction.hash,
+      VaultAuthority: vaultAuthorityTransaction.hash,
+    },
   };
 }
