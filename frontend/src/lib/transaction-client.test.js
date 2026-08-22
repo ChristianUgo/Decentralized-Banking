@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
+import { targetChain } from "./chain";
 import { getTransactionErrorMessage, prepareProtocolTransaction } from "./transaction-client";
 
 const ACCOUNT = "0x1234567890abcdef1234567890abcdef12345678";
@@ -16,7 +17,7 @@ function createFixture() {
   const provider = {
     getCode: vi.fn().mockResolvedValue("0x1234"),
     getFeeData: vi.fn().mockResolvedValue({ gasPrice: 2n, maxFeePerGas: null }),
-    getNetwork: vi.fn().mockResolvedValue({ chainId: 31_337n }),
+    getNetwork: vi.fn().mockResolvedValue({ chainId: BigInt(targetChain.id) }),
     getSigner: vi.fn().mockResolvedValue(signer),
   };
   const contract = { borrow: createMethod(), deposit: createMethod(), liquidate: createMethod() };
