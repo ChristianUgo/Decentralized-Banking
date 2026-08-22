@@ -117,6 +117,7 @@ pnpm audit:dependencies # High-severity dependency gate
 pnpm check            # Complete repository quality gate
 pnpm deploy:sepolia   # Explicit public-testnet broadcast; requires dedicated credentials
 pnpm verify:sepolia   # Read-only Sepolia bytecode, wiring and ownership verification
+pnpm verify:sources:sepolia # Publish all five deployed contract sources to Etherscan
 pnpm release:validate # Fail closed on stale/local manifests or unsafe production URLs
 ```
 

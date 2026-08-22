@@ -28,6 +28,14 @@ pnpm verify:sepolia
 
 `pnpm deploy:sepolia` writes `deployments/11155111.json`, including deployment and authority-wiring transaction hashes, and exports the same manifest and ABIs to `frontend/src/contracts/`. Review those diffs before committing the deployment evidence. The verifier is read-only and fails if the RPC chain, bytecode, module wiring, LendingPool authority, or oracle owner differs from the manifest.
 
+After the deployment evidence is committed, configure an Etherscan API V2 key and publish all five contract sources. This step does not require the deployment private key:
+
+```powershell
+$env:ETHERSCAN_API_KEY = "your-etherscan-api-key"
+pnpm verify:sources:sepolia
+Remove-Item Env:ETHERSCAN_API_KEY
+```
+
 ## Frontend release configuration
 
 Configure the deployment platform with public values only:
@@ -47,6 +55,7 @@ Never expose `SEPOLIA_PRIVATE_KEY` to Next.js or prefix it with `NEXT_PUBLIC_`.
 - [ ] Five contract addresses from the generated manifest
 - [ ] Explorer links for deployment and wiring transactions
 - [ ] `pnpm verify:sepolia` output
+- [ ] Five publicly verified contract-source pages on Sepolia Etherscan
 - [ ] Successful wallet connection and supported-network switch
 - [ ] Deposit, borrow, repay, withdraw, and liquidation smoke-test transaction links
 - [ ] Desktop and mobile screenshots with no console errors
