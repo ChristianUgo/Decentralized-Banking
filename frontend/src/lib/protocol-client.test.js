@@ -1,6 +1,8 @@
+import { Interface } from "ethers";
 import { describe, expect, it, vi } from "vitest";
 
-import { createProtocolReader } from "./protocol-client";
+import abis from "../contracts/abis.json";
+import { createProtocolReader, getProtocolErrorMessage } from "./protocol-client";
 
 const ACCOUNT = "0x1234567890abcdef1234567890abcdef12345678";
 
@@ -70,5 +72,27 @@ describe("protocol reader", () => {
     expect(result.protocol.totalCollateralValue).toBe(10n);
     expect(fixture.contracts.lendingPool.getAccount).not.toHaveBeenCalled();
     expect(fixture.provider.getBalance).not.toHaveBeenCalled();
+  });
+});
+
+describe("protocol read errors", () => {
+  it("explains a stale testnet oracle", () => {
+    const oracle = new Interface(abis.PriceOracle);
+    const data = oracle.encodeErrorResult("StalePrice", [100n, 200n]);
+
+    expect(
+      getProtocolErrorMessage({
+        data,
+        shortMessage: "execution reverted (unknown custom error)",
+      }),
+    ).toBe(
+      "The ETH/USD oracle price is stale. The oracle owner must publish a fresh testnet price before protocol reads and transactions can continue.",
+    );
+  });
+
+  it("gives a retry path for a public RPC outage", () => {
+    expect(getProtocolErrorMessage({ message: "failed to fetch" })).toContain(
+      "Check your internet connection and retry",
+    );
   });
 });
