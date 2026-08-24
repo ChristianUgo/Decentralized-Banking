@@ -11,6 +11,8 @@ Stage 7 established deterministic local browser QA and a guarded Sepolia deploym
 
 The Next.js application is deployed through Vercel's Git integration with `frontend/` configured as the project Root Directory. Preview deployments are created for pull requests and `main` is the production branch. Vercel configuration lives with the frontend and adds baseline transport, framing, content-type, referrer, and browser-permission headers.
 
+Implementation note (2026-08-24): the first verified production artifact was deployed from merged `main` with Vercel CLI 59.5.0 because automatic Git linking did not resolve the repository above the nested `frontend/` project root. The full commit SHA was supplied as build metadata and verified through `/health`. Automatic Git previews and `main` deployment remain a delivery follow-up; the hosted application and rollback model are otherwise unchanged.
+
 Production builds require a committed Sepolia manifest, a byte-for-byte matching frontend address export, five unique contract addresses, seven transaction hashes, and HTTPS-only public configuration. A static `/health` route exposes only the release commit, chain identifier, network name, and service status. It exposes no provider URL, key, account, or contract authority.
 
 GitHub Releases remain manual. A release owner dispatches the production workflow from `main` with a semantic tag and verified deployment URL. The workflow reruns repository gates, validates release inputs, checks the deployed `/health` commit, scans every route for browser and accessibility failures, and creates the release only after all evidence passes.
