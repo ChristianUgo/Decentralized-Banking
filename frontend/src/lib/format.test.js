@@ -16,6 +16,7 @@ describe("on-chain value formatting", () => {
       "1,234.567",
     );
     expect(formatAmount(2_000_000_000n, { decimals: 8, maxFraction: 2 })).toBe("20");
+    expect(formatAmount(500_000_000_000_000n, { maxFraction: 4 })).toBe("0.0005");
     expect(formatAmount(null)).toBe("—");
   });
 

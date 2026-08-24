@@ -34,7 +34,7 @@ export function ProtocolPreview() {
           label={connected ? "Collateral" : "Protocol collateral"}
           value={formatAmount(
             connected ? position.collateralAmount : data?.protocol.totalCollateral,
-            { maxFraction: 3 },
+            { maxFraction: 4 },
           )}
         />
         <Metric
