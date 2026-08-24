@@ -71,6 +71,8 @@ The workflow refuses non-semantic tags, existing releases, non-main refs, invali
 
 ## 6. Post-release evidence
 
+The verified 2026-08-24 production deployment is recorded in [`production-deployment-evidence.md`](production-deployment-evidence.md). The semantic GitHub release and successful Production release workflow must be added there after publication.
+
 Record these links in the project handoff:
 
 - GitHub release and tag

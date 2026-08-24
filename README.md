@@ -2,9 +2,9 @@
 
 Aegis Bank is a non-custodial lending application where users will deposit ETH collateral, borrow a protocol-issued stablecoin, repay debt and interest, withdraw safe collateral, monitor position health, and liquidate eligible unhealthy positions for a bonus.
 
-The project is being implemented stage by stage from the approved implementation plan. Stages 1–7 established the frontend foundation, hardened protocol, wallet and transaction journeys, responsive accessibility layer, integrated browser QA, and controlled Sepolia release path. Stage 8 adds the production frontend and GitHub release gate.
+The project is being implemented stage by stage from the approved implementation plan. Stages 1–7 established the frontend foundation, hardened protocol, wallet and transaction journeys, responsive accessibility layer, integrated browser QA, and controlled Sepolia release path. Stage 8 has deployed and verified the production frontend; the guarded semantic GitHub release remains pending.
 
-> **Security status:** Local-development contracts only. The protocol is unaudited, uses an owner-updated test oracle, and must not be used with real funds.
+> **Security status:** Public Sepolia demonstration only. The protocol is unaudited, uses an owner-updated test oracle, and must not be used with real funds or on mainnet.
 
 ## Current status
 
@@ -17,7 +17,7 @@ The project is being implemented stage by stage from the approved implementation
 | 5 | Deposit, withdraw, borrow, repay and liquidation transactions | Complete |
 | 6 | Complete responsive UI/UX and accessibility | Complete (PR #11) |
 | 7 | Integrated QA and testnet release | Complete (PR #12) |
-| 8 | GitHub release and production frontend deployment | Ready for review |
+| 8 | GitHub release and production frontend deployment | Production deployed and verified; GitHub release pending |
 | 9 | Interview guide based on the deployed release | Not started |
 
 ## Technology
@@ -37,7 +37,7 @@ The project is being implemented stage by stage from the approved implementation
 | Solidity analysis | Solhint 6.2.4 locally; Slither 0.11.6 in CI | Fast zero-warning feedback plus deeper independent Linux analysis |
 | Package management | pnpm 11.19.0 workspace | Fast deterministic installs with one lockfile for protocol and frontend |
 | Automation | GitHub Actions | Reproducible lint, test, build and compile checks on pull requests |
-| Frontend hosting | Vercel Git integration | Commit-addressable previews, production promotion and fast rollback for the nested Next.js app |
+| Frontend hosting | Vercel production deployment | Commit-addressable builds, stable production alias and fast rollback for the nested Next.js app |
 | Release evidence | GitHub Releases and Playwright | A release is published only after manifest, commit, live-route and accessibility verification |
 
 Dependency versions are pinned in `pnpm-lock.yaml`. They are reviewed again at each release instead of floating silently in production.
@@ -172,6 +172,8 @@ Sepolia deployment is configured but intentionally manual. A release owner must 
 Stage 8 adds a Vercel-hosted release boundary for the nested Next.js application. Production validation rejects local or stale deployment manifests, mismatched frontend exports, duplicate addresses, missing transaction evidence, insecure public URLs, and non-Sepolia configuration. The deployed `/health` contract exposes the release commit and network without leaking provider or authority details.
 
 GitHub Releases are manual and fail closed. The release workflow runs only from `main`, repeats repository validation, confirms the live deployment serves the exact commit, scans every route for HTTP, runtime and accessibility failures, and then creates a semantic release. See [ADR 0009](docs/adr/0009-production-release-and-hosting.md) and the [production release runbook](docs/production-release.md).
+
+The verified production interface is live at [decentralized-banking.vercel.app](https://decentralized-banking.vercel.app). Its health response identifies merged commit `62ed13bc9a19e3819936d72ebebdf7b3576c0042`, and all public routes passed post-deploy content, browser-error, RPC-read and automated WCAG A/AA checks. See the [production deployment evidence](docs/production-deployment-evidence.md) for the immutable deployment, configuration, verification results, limitations and remaining release work.
 
 ## Product architecture
 
