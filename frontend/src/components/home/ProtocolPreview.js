@@ -60,7 +60,7 @@ export function ProtocolPreview() {
       <div className="p-6">
         <div className="mb-3 flex justify-between text-xs font-medium text-mist-300">
           <span>Read layer</span>
-          <span>{data?.blockNumber ? `Block ${data.blockNumber}` : "Waiting for local RPC"}</span>
+          <span>{data?.blockNumber ? `Block ${data.blockNumber}` : "Waiting for protocol data"}</span>
         </div>
         <div className="h-2 overflow-hidden rounded-full bg-white/8">
           <div className="h-full w-4/5 rounded-full bg-gradient-to-r from-electric-500 to-electric-300" />

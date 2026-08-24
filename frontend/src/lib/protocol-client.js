@@ -1,10 +1,11 @@
-import { Contract, isAddress, JsonRpcProvider } from "ethers";
+import { Contract, Interface, isAddress, JsonRpcProvider } from "ethers";
 
 import abis from "../contracts/abis.json";
 import deployment from "../contracts/addresses.json";
 import { targetChain } from "./chain";
 
 const REQUIRED_CONTRACTS = ["LendingPool", "PriceOracle", "Stablecoin"];
+const priceOracleInterface = new Interface(abis.PriceOracle);
 
 function requireAddress(name) {
   const address = deployment.contracts[name];
@@ -148,8 +149,33 @@ export function getProtocolReader() {
 
 export function getProtocolErrorMessage(error) {
   const message = error?.shortMessage || error?.message || "Protocol reads failed.";
+
+  const revertData = [
+    error?.data,
+    error?.error?.data,
+    error?.info?.data,
+    error?.info?.error?.data,
+  ].find((value) => typeof value === "string" && value.startsWith("0x"));
+
+  let decodedError = null;
+  if (revertData) {
+    try {
+      decodedError = priceOracleInterface.parseError(revertData);
+    } catch {
+      // The revert belongs to another contract and should use its normal message.
+    }
+  }
+
+  if (decodedError?.name === "StalePrice" || /StalePrice/i.test(message)) {
+    return "The ETH/USD oracle price is stale. The oracle owner must publish a fresh testnet price before protocol reads and transactions can continue.";
+  }
+
   if (/ECONNREFUSED|could not detect network|failed to fetch/i.test(message)) {
-    return `Cannot reach ${targetChain.name} at ${targetChain.rpcUrl}. Start the local node and deploy the protocol.`;
+    if (targetChain.id === 31337) {
+      return `Cannot reach ${targetChain.name} at ${targetChain.rpcUrl}. Start the local node and deploy the protocol.`;
+    }
+
+    return `Cannot reach ${targetChain.name} at ${targetChain.rpcUrl}. Check your internet connection and retry. If the problem continues, configure a healthy browser-safe RPC endpoint.`;
   }
   return message;
 }

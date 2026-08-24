@@ -50,14 +50,16 @@ Never expose `SEPOLIA_PRIVATE_KEY` to Next.js or prefix it with `NEXT_PUBLIC_`.
 ## Evidence checklist
 
 - [ ] Commit SHA and passing CI URL
-- [ ] Sepolia chain ID `11155111`
-- [ ] Dedicated deployer/oracle-owner address
-- [ ] Five contract addresses from the generated manifest
-- [ ] Explorer links for deployment and wiring transactions
-- [ ] `pnpm verify:sepolia` output
-- [ ] Five publicly verified contract-source pages on Sepolia Etherscan
-- [ ] Successful wallet connection and supported-network switch
-- [ ] Deposit, borrow, repay, withdraw, and liquidation smoke-test transaction links
+- [x] Sepolia chain ID `11155111`
+- [x] Dedicated deployer/oracle-owner address in [`deployments/11155111.json`](../deployments/11155111.json)
+- [x] Five contract addresses from the generated manifest
+- [x] Explorer transaction hashes for deployment and authority wiring in the manifest
+- [x] Successful `pnpm verify:sepolia` verification
+- [x] Five publicly verified contract-source pages on Sepolia Etherscan
+- [x] Successful wallet connection and supported-network switch
+- [x] Deposit, borrow, repay, and withdraw transaction links in [`sepolia-smoke-test.md`](sepolia-smoke-test.md)
+- [x] Healthy-position liquidation guard evidence in [`sepolia-smoke-test.md`](sepolia-smoke-test.md)
+- [ ] Full Sepolia liquidation transaction; automated contract tests currently provide execution coverage
 - [ ] Desktop and mobile screenshots with no console errors
 - [ ] Known limitations copied into the release notes
 
