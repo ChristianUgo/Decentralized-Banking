@@ -7,14 +7,15 @@ This record captures the verified Aegis Bank frontend deployed on 2026-08-24. â€
 | Field | Evidence |
 | --- | --- |
 | Canonical URL | [decentralized-banking.vercel.app](https://decentralized-banking.vercel.app) |
-| Immutable deployment URL | [decentralized-banking-2pupfwc9u-christian-ugo-projects.vercel.app](https://decentralized-banking-2pupfwc9u-christian-ugo-projects.vercel.app) |
-| Vercel deployment | `dpl_5Z2ocoFHz2nnJGht4vvuVGiah67A` |
-| Vercel inspector | [Deployment 5Z2ocoFHz2nnJGht4vvuVGiah67A](https://vercel.com/christian-ugo-projects/decentralized-banking/5Z2ocoFHz2nnJGht4vvuVGiah67A) |
-| Git commit | [`62ed13bc9a19e3819936d72ebebdf7b3576c0042`](https://github.com/ChristianUgo/Decentralized-Banking/commit/62ed13bc9a19e3819936d72ebebdf7b3576c0042) |
-| Precision-fix pull request | [PR #18](https://github.com/ChristianUgo/Decentralized-Banking/pull/18) |
+| Immutable deployment URL | [decentralized-banking-lz71ner80-christian-ugo-projects.vercel.app](https://decentralized-banking-lz71ner80-christian-ugo-projects.vercel.app) |
+| Vercel deployment | `dpl_2MK4xJuVkscuoAvvaP469yYnwfyM` |
+| Vercel inspector | [Deployment 2MK4xJuVkscuoAvvaP469yYnwfyM](https://vercel.com/christian-ugo-projects/decentralized-banking/2MK4xJuVkscuoAvvaP469yYnwfyM) |
+| Git commit | [`20f78395fb22e1cd51499b4ea48374cb5eb7988b`](https://github.com/ChristianUgo/Decentralized-Banking/commit/20f78395fb22e1cd51499b4ea48374cb5eb7988b) |
+| GitHub release | [Aegis Bank v1.0.0](https://github.com/ChristianUgo/Decentralized-Banking/releases/tag/v1.0.0) |
+| Release workflow | [Successful guarded run](https://github.com/ChristianUgo/Decentralized-Banking/actions/runs/32754206681) |
 | Target and status | Production / Ready |
 | Framework | Next.js 16.3.1 with Turbopack |
-| Build region and duration | Washington, D.C. (`iad1`) / 10 seconds |
+| Build region and duration | Washington, D.C. (`iad1`) / 11 seconds |
 
 The production build received the full merged commit SHA through `VERCEL_GIT_COMMIT_SHA`. This makes the static health response commit-addressable even though the deployment was initiated through the pinned Vercel CLI rather than an automatic Git deployment.
 
@@ -35,7 +36,7 @@ PublicNode was selected for the shipped browser read layer because it is keyless
 The live [`/health`](https://decentralized-banking.vercel.app/health) response was checked after alias promotion:
 
 ```json
-{"chainId":11155111,"network":"sepolia","release":"62ed13bc9a19e3819936d72ebebdf7b3576c0042","status":"ok"}
+{"chainId":11155111,"network":"sepolia","release":"20f78395fb22e1cd51499b4ea48374cb5eb7988b","status":"ok"}
 ```
 
 The response confirms the intended chain and exact release without exposing the RPC URL, wallet address, contract authorities or secrets.
@@ -51,7 +52,7 @@ The merged change passed GitHub's integrated quality, Slither static-analysis, a
 - deterministic gas ceilings for all six measured protocol actions;
 - dependency audit with no high-severity vulnerability.
 
-After deployment, agent-browser 0.34.0 checked the canonical production domain and every public banking route:
+After deployment, browser verification checked the canonical production domain and every public banking route:
 
 | Route | Meaningful content | Next.js overlay | Page error | RPC/read error | Axe WCAG A/AA violation |
 | --- | --- | --- | --- | --- | --- |
@@ -72,9 +73,15 @@ The post-deploy Vercel error-level log scan for the preceding hour returned no e
 
 Rollback uses Vercel's deployment history: promote the last verified production deployment, then repeat the health, route, console and accessibility checks before declaring recovery.
 
-## Remaining release work
+## GitHub release result
+
+The Production release workflow ran from merged `main`, repeated manifest and contract verification, ran the complete repository gate, installed Chromium, and passed seven production browser tests before publishing `v1.0.0`. The tag points exactly to `20f78395fb22e1cd51499b4ea48374cb5eb7988b`, matching the live `/health` response.
+
+GitHub emitted one nonblocking platform annotation: the pinned third-party Actions still declare the deprecated Node 20 action runtime, so GitHub forced Node 24. Updating those pinned action revisions is a maintenance follow-up; it did not change the application build or test result.
+
+## Remaining operational work
 
 - Connect the Vercel project to GitHub for automatic commit-addressable previews and `main` deployments, or formalize a token-based CI deployment workflow.
-- Run the guarded Production release workflow from `main` and publish the first semantic GitHub release.
-- Preserve this evidence in the final project handoff and interview guide.
-
+- Add monitored primary/fallback RPC infrastructure and frontend/runtime error alerting.
+- Update pinned GitHub Actions before the runtime deprecation becomes blocking.
+- Preserve the unaudited, Sepolia-only boundary unless a separate audit and real-value release process is completed.

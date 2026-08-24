@@ -1,8 +1,8 @@
 # Aegis Bank — Decentralized Banking Protocol
 
-Aegis Bank is a non-custodial lending application where users will deposit ETH collateral, borrow a protocol-issued stablecoin, repay debt and interest, withdraw safe collateral, monitor position health, and liquidate eligible unhealthy positions for a bonus.
+Aegis Bank is a non-custodial lending application where users deposit ETH collateral, borrow a protocol-issued stablecoin, repay debt and interest, withdraw safe collateral, monitor position health, and liquidate eligible unhealthy positions for a bonus.
 
-The project is being implemented stage by stage from the approved implementation plan. Stages 1–7 established the frontend foundation, hardened protocol, wallet and transaction journeys, responsive accessibility layer, integrated browser QA, and controlled Sepolia release path. Stage 8 has deployed and verified the production frontend; the guarded semantic GitHub release remains pending.
+The project was implemented stage by stage from the approved implementation plan. Stages 1–8 established the frontend foundation, hardened protocol, wallet and transaction journeys, responsive accessibility layer, integrated browser QA, controlled Sepolia release path, and guarded public release. Stage 9 completes the final project analysis and recruiter interview guide against the shipped `v1.0.0` artifact.
 
 > **Security status:** Public Sepolia demonstration only. The protocol is unaudited, uses an owner-updated test oracle, and must not be used with real funds or on mainnet.
 
@@ -17,8 +17,8 @@ The project is being implemented stage by stage from the approved implementation
 | 5 | Deposit, withdraw, borrow, repay and liquidation transactions | Complete |
 | 6 | Complete responsive UI/UX and accessibility | Complete (PR #11) |
 | 7 | Integrated QA and testnet release | Complete (PR #12) |
-| 8 | GitHub release and production frontend deployment | Production deployed and verified; GitHub release pending |
-| 9 | Interview guide based on the deployed release | Not started |
+| 8 | GitHub release and production frontend deployment | Complete — [`v1.0.0`](https://github.com/ChristianUgo/Decentralized-Banking/releases/tag/v1.0.0) |
+| 9 | Interview guide and final project analysis based on the deployed release | Complete |
 
 ## Technology
 
@@ -173,11 +173,11 @@ Stage 8 adds a Vercel-hosted release boundary for the nested Next.js application
 
 GitHub Releases are manual and fail closed. The release workflow runs only from `main`, repeats repository validation, confirms the live deployment serves the exact commit, scans every route for HTTP, runtime and accessibility failures, and then creates a semantic release. See [ADR 0009](docs/adr/0009-production-release-and-hosting.md) and the [production release runbook](docs/production-release.md).
 
-The verified production interface is live at [decentralized-banking.vercel.app](https://decentralized-banking.vercel.app). Its health response identifies merged commit `62ed13bc9a19e3819936d72ebebdf7b3576c0042`, and all public routes passed post-deploy content, browser-error, RPC-read and automated WCAG A/AA checks. See the [production deployment evidence](docs/production-deployment-evidence.md) for the immutable deployment, configuration, verification results, limitations and remaining release work.
+The verified production interface is live at [decentralized-banking.vercel.app](https://decentralized-banking.vercel.app). Its health response identifies release commit `20f78395fb22e1cd51499b4ea48374cb5eb7988b`, and all public routes passed post-deploy content, browser-error, RPC-read and automated WCAG A/AA checks. The guarded workflow published [Aegis Bank v1.0.0](https://github.com/ChristianUgo/Decentralized-Banking/releases/tag/v1.0.0) only after repeating the repository, Sepolia, live-commit and production-browser gates. See the [production deployment evidence](docs/production-deployment-evidence.md) for the immutable deployment, configuration, verification results and limitations.
 
 ## Product architecture
 
-The final application will have four clear layers:
+The final application has four clear layers:
 
 1. **Presentation:** App Router pages and custom Tailwind components.
 2. **Web3 client:** Wallet lifecycle, contract reads/writes, address registry and transaction state.
@@ -262,9 +262,11 @@ Each implementation stage is reviewed before it is committed.
 
 Commits must not mix generated artifacts, unrelated formatting, protocol behavior and UI redesign. See [the repository strategy ADR](docs/adr/0002-repository-and-delivery-strategy.md).
 
-## Interview guide
+## Final project handoff
 
-The interview guide is intentionally deferred until the GitHub release and production deployment are complete. It will describe the shipped architecture, formulas, security assumptions, gas decisions, tests, trade-offs, deployment evidence and likely technical interview questions.
+The [final project analysis](docs/project-analysis.md) maps every source requirement to the shipped implementation and evaluates the architecture, protocol mathematics, security posture, gas, UI/UX, tests, deployment evidence, limitations and production-readiness roadmap.
+
+The [interview guide](docs/interview-guide.md) provides 30-second, two-minute and five-minute explanations; a live demo script; technical questions at increasing depth; formulas; security and provider trade-offs; evidence links; lessons learned; claims to avoid; and recruiter-ready resume wording. It describes the deployed `v1.0.0` release rather than planned behavior.
 
 ## License
 
