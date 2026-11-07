@@ -16,11 +16,11 @@
     "react-dom": "19.2.8"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "4.3.3",
-    "eslint": "9.39.2",
-    "eslint-config-next": "16.3.1",
-    "postcss": "8.5.26",
-    "tailwindcss": "4.3.3",
-    "vitest": "4.1.10"
+    "@tailwindcss/postcss": "4.3.4",
+    "eslint": "10.14.0",
+    "eslint-config-next": "16.4.5",
+    "postcss": "8.5.32",
+    "tailwindcss": "4.3.4",
+    "vitest": "5.1.0"
   }
 }
